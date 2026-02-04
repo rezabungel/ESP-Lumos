@@ -12,25 +12,61 @@ Strip<PIN>::~Strip()
 }
 
 template <uint8_t PIN>
-void Strip<PIN>::begin()
+CRGB *Strip<PIN>::data()
 {
-    FastLED.clear();
+    return leds;
 }
 
 template <uint8_t PIN>
-void Strip<PIN>::on()
+uint16_t Strip<PIN>::size() const
 {
-    fill_solid(leds, length, CRGB::White);
-}
-
-template <uint8_t PIN>
-void Strip<PIN>::off()
-{
-    FastLED.clear();
+    return length;
 }
 
 template <uint8_t PIN>
 void Strip<PIN>::setColor(uint8_t r, uint8_t g, uint8_t b)
 {
     fill_solid(leds, length, CRGB(r, g, b));
+    dirty = true;
+}
+
+template <uint8_t PIN>
+void Strip<PIN>::clear()
+{
+    fill_solid(leds, length, CRGB::Black);
+    dirty = true;
+}
+
+template <uint8_t PIN>
+bool Strip<PIN>::needsUpdate() const
+{
+    return dirty;
+}
+
+template <uint8_t PIN>
+void Strip<PIN>::resetUpdateFlag()
+{
+    dirty = false;
+}
+
+template <uint8_t PIN>
+void Strip<PIN>::setAnimation(Animation *anim)
+{
+    animation = anim;
+    dirty = true;
+}
+
+template <uint8_t PIN>
+bool Strip<PIN>::stepAnimation(uint32_t now)
+{
+    if (animation)
+    {
+        bool changed = animation->step(leds, length, now);
+        if (changed)
+        {
+            dirty = true;
+        }
+        return changed;
+    }
+    return false;
 }

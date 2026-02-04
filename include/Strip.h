@@ -4,6 +4,7 @@
 
 #include <FastLED.h>
 #include <cstdint>
+#include "Animation.h"
 
 #define LED_TYPE WS2815
 #define COLOR_ORDER RGB
@@ -15,16 +16,24 @@ public:
     Strip(uint16_t length);
     ~Strip();
 
-    void begin();
+    CRGB *data();
+    uint16_t size() const;
 
-    void on();
-    void off();
     void setColor(uint8_t r, uint8_t g, uint8_t b);
-    void update();
+    void clear();
+
+    bool needsUpdate() const;
+    void resetUpdateFlag();
+
+    void setAnimation(Animation *anim);
+    bool stepAnimation(uint32_t now);
 
 private:
     uint16_t length;
     CRGB *leds;
+    bool dirty = true;
+
+    Animation *animation = nullptr;
 };
 
 #include "Strip.tpp"
