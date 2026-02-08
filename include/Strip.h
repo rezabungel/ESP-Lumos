@@ -4,13 +4,14 @@
 
 #include <FastLED.h>
 #include <cstdint>
+#include "StripBase.h"
 #include "Animation.h"
 
 #define LED_TYPE WS2815
 #define COLOR_ORDER RGB
 
 template <uint8_t PIN>
-class Strip
+class Strip : public StripBase
 {
 public:
     Strip(uint16_t length);
@@ -22,11 +23,11 @@ public:
     void setColor(uint8_t r, uint8_t g, uint8_t b);
     void clear();
 
-    bool needsUpdate() const;
-    void resetUpdateFlag();
+    bool needsUpdate() const override;
+    void resetUpdateFlag() override;
 
     void setAnimation(Animation *anim);
-    bool stepAnimation(uint32_t now);
+    bool stepAnimation(uint32_t now) override;
 
 private:
     uint16_t length;
