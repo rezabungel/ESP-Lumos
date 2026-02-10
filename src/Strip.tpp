@@ -26,6 +26,7 @@ uint16_t Strip<PIN>::size() const
 template <uint8_t PIN>
 void Strip<PIN>::setColor(uint8_t r, uint8_t g, uint8_t b)
 {
+    animation = nullptr;
     fill_solid(leds, length, CRGB(r, g, b));
     dirty = true;
 }
@@ -54,6 +55,12 @@ void Strip<PIN>::setAnimation(Animation *anim)
 {
     animation = anim;
     dirty = true;
+}
+
+template <uint8_t PIN>
+bool Strip<PIN>::hasAnimation() const
+{
+    return animation != nullptr;
 }
 
 template <uint8_t PIN>

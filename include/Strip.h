@@ -27,6 +27,7 @@ public:
     void resetUpdateFlag() override;
 
     void setAnimation(Animation *anim);
+    bool hasAnimation() const override;
     bool stepAnimation(uint32_t now) override;
 
 private:
