@@ -15,11 +15,13 @@ template <uint8_t PIN>
 class Strip : public StripBase, public LightElement
 {
 public:
-    Strip(uint16_t length);
+    explicit Strip(const char *name, uint16_t length);
     ~Strip();
 
     CRGB *data();
     uint16_t size() const;
+
+    const char *getName() const override;
 
     void setColor(uint8_t r, uint8_t g, uint8_t b) override;
     void clear() override;
@@ -32,6 +34,7 @@ public:
     bool stepAnimation(uint32_t now) override;
 
 private:
+    const char *const name;
     uint16_t length;
     CRGB *leds;
     bool dirty = true;

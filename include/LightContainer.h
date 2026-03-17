@@ -9,7 +9,11 @@ template <uint8_t MAX_ELEMENTS>
 class LightContainer : public LightElement
 {
 public:
-    LightContainer();
+    explicit LightContainer(const char *name);
+
+    const char *getName() const override;
+    LightElement *findElementByPointer(LightElement *searchEl) const;
+    LightElement *findElementByName(const char *searchName) const;
 
     bool addElement(LightElement *el);
 
@@ -22,6 +26,7 @@ protected:
     uint8_t getElementCount() const;
 
 private:
+    const char *const name;
     LightElement *elements[MAX_ELEMENTS];
     uint8_t elementCount;
 };

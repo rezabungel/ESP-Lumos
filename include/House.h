@@ -8,7 +8,7 @@
 class House : public LightContainer<HOUSE_MAX_ELEMENTS>
 {
 public:
-    House() = default;
+    explicit House(const char *name) : LightContainer<HOUSE_MAX_ELEMENTS>(name) {}
 };
 
 #endif // _HOUSE_H_

@@ -10,6 +10,8 @@ class LightElement
 public:
     virtual ~LightElement() = default;
 
+    virtual const char *getName() const = 0;
+
     virtual void setColor(uint8_t r, uint8_t g, uint8_t b) = 0;
     virtual void clear() = 0;
     virtual void setAnimation(Animation *anim) = 0;

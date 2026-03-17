@@ -1,12 +1,44 @@
 template <uint8_t MAX_ELEMENTS>
-LightContainer<MAX_ELEMENTS>::LightContainer() : elementCount(0)
+LightContainer<MAX_ELEMENTS>::LightContainer(const char *name) : name(name), elementCount(0)
 {
+}
+
+template <uint8_t MAX_ELEMENTS>
+const char *LightContainer<MAX_ELEMENTS>::getName() const
+{
+    return name;
+}
+
+template <uint8_t MAX_ELEMENTS>
+LightElement *LightContainer<MAX_ELEMENTS>::findElementByPointer(LightElement *searchEl) const
+{
+    for (uint8_t i = 0; i < elementCount; ++i)
+    {
+        if (elements[i] == searchEl)
+        {
+            return elements[i];
+        }
+    }
+    return nullptr;
+}
+
+template <uint8_t MAX_ELEMENTS>
+LightElement *LightContainer<MAX_ELEMENTS>::findElementByName(const char *searchName) const
+{
+    for (uint8_t i = 0; i < elementCount; ++i)
+    {
+        if (strcmp(elements[i]->getName(), searchName) == 0)
+        {
+            return elements[i];
+        }
+    }
+    return nullptr;
 }
 
 template <uint8_t MAX_ELEMENTS>
 bool LightContainer<MAX_ELEMENTS>::addElement(LightElement *el)
 {
-    if (!el || elementCount >= MAX_ELEMENTS)
+    if (!el || findElementByPointer(el) || findElementByName(el->getName()) || elementCount >= MAX_ELEMENTS)
     {
         return false;
     }
