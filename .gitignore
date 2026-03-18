@@ -1,5 +1,6 @@
+.DS_Store
 .pio
 .vscode
-
+venv
 secrets
 no_push
