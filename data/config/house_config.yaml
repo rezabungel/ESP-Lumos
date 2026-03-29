@@ -1,0 +1,20 @@
+house:
+  name: "myHouse"
+  rooms:
+    - name: "kitchen"
+      light_groups:
+        - name: "floor"
+          strips:
+            - name: "Strip 1"
+              pin: 46
+              length: 300
+            - name: "Strip 2"
+              pin: 48
+              length: 300
+    - name: "livingRoom"
+      light_groups:
+        - name: "floor"
+          strips:
+            - name: "Strip 1"
+              pin: 47
+              length: 300

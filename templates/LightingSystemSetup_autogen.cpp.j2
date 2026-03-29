@@ -1,0 +1,35 @@
+// ============================================================
+//  THIS FILE IS AUTO-GENERATED
+//  Generated from house configuration: {{ config_file_name }}
+//  SHA256 hash of source config: {{ CONFIG_SHA256 }}
+//  Do not modify manually, your changes will be overwritten.
+// ============================================================
+
+#include "LightingSystemSetup.h"
+
+// ============================================================
+//  OBJECTS INITIALIZATION
+//  Instantiate all objects: House, Room, LightGroup, Strip
+// ============================================================
+{{ objects_init }}
+
+// ============================================================
+//  LED MANAGER INITIALIZATION
+//  Create LED manager instance
+// ============================================================
+{{ led_manager_init }}
+
+void setupLightingSystem()
+{
+    // ========================================================
+    // HOUSE HIERARCHY BUILD
+    // Build hierarchy: House -> Room -> LightGroup -> Strip
+    // ========================================================
+    {{ hierarchy_build | indent(4) }}
+
+    // ========================================================
+    // LED MANAGER REGISTRATION
+    // Register all strips in LED manager
+    // ========================================================
+    {{ led_manager_registration | indent(4) }}
+}{{ '\n' }}
