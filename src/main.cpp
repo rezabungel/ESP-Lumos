@@ -1,15 +1,16 @@
 #include <Arduino.h>
-#include <AsyncTCP.h>
-#include <ESPAsyncWebServer.h>
 #include "WiFiConfig.h"
 #include "WiFiService.h"
 #include "LittleFSService.h"
+#include "web/WebServerService.h"
 #include "LedManager.h"
 #include "House.h"
 #include "Room.h"
 #include "LightGroup.h"
 #include "Strip.h"
 #include "SnakeAnimation.h"
+
+WebServerService webServer;
 
 // ============================================================
 //  LED MANAGER INITIALIZATION
@@ -74,6 +75,9 @@ void setup()
     esp_deep_sleep_start();
   }
 
+  // 3. Initialize and start HTTP web server
+  webServer.begin();
+
   // ========================================================
   // HOUSE HIERARCHY BUILD
   // Build hierarchy: House -> Room -> LightGroup -> Strip
@@ -100,10 +104,10 @@ void setup()
 
 void loop()
 {
-  Serial.println("loop: before update");
+  // Serial.println("loop: before update");
 
   uint32_t now = millis();
   ledManager.update(now);
 
-  Serial.println("loop: after update");
+  // Serial.println("loop: after update");
 }
