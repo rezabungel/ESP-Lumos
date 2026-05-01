@@ -1,15 +1,38 @@
 #include <Arduino.h>
-// #include <Adafruit_NeoPixel.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include "WiFiConfig.h"
 #include "WiFiService.h"
 #include "LittleFSService.h"
+#include "LedManager.h"
+#include "House.h"
+#include "Room.h"
+#include "LightGroup.h"
+#include "Strip.h"
+#include "SnakeAnimation.h"
 
-#define LED_PIN 48
-#define NUM_LEDS 10
+// ============================================================
+//  LED MANAGER INITIALIZATION
+//  Create LED manager instance
+// ============================================================
+LedManager ledManager;
 
-// Adafruit_NeoPixel LED_RGB(NUM_LEDS, LED_PIN, NEO_GRB + NEO_KHZ800);
+// ============================================================
+//  OBJECTS INITIALIZATION
+//  Instantiate all objects: House, Room, LightGroup, Strip
+// ============================================================
+House myHouse("myHouse");
+Room room1("room1");
+Room room2("room2");
+LightGroup lightGroup1("lightGroup1");
+LightGroup lightGroup2("lightGroup2");
+Strip<46> strip1("strip1", 300);
+Strip<48> strip2("strip2", 300);
+
+// ---
+SnakeAnimation snake1(50, 40);
+SnakeAnimation snake2(10, 5);
+// ---
 
 void setup()
 {
@@ -51,34 +74,36 @@ void setup()
     esp_deep_sleep_start();
   }
 
-  // LED_RGB.begin();
-  // LED_RGB.setBrightness(255);
-  // LED_RGB.show();
+  // ========================================================
+  // HOUSE HIERARCHY BUILD
+  // Build hierarchy: House -> Room -> LightGroup -> Strip
+  // ========================================================
+  myHouse.addElement(&room1);
+  myHouse.addElement(&room2);
+  room1.addElement(&lightGroup1);
+  room2.addElement(&lightGroup2);
+  lightGroup1.addElement(&strip1);
+  lightGroup2.addElement(&strip2);
+
+  // ========================================================
+  // LED MANAGER REGISTRATION
+  // Register all strips in LED manager
+  // ========================================================
+  ledManager.addStrip(&strip1);
+  ledManager.addStrip(&strip2);
+
+  // ---
+  strip1.setAnimation(&snake1);
+  strip2.setAnimation(&snake2);
+  // ---
 }
 
 void loop()
 {
-  Serial.println("LED Animation Start");
+  Serial.println("loop: before update");
 
-  // for (int i = 0; i < NUM_LEDS; ++i)
-  // {
-  //   LED_RGB.setPixelColor(i, LED_RGB.Color(0, 255, 0));
-  // }
-  // LED_RGB.show();
+  uint32_t now = millis();
+  ledManager.update(now);
 
-  // for (int i = NUM_LEDS; i > 0; --i)
-  // {
-  //   LED_RGB.setPixelColor(0, LED_RGB.Color(255, 0, 0));
-  //   LED_RGB.show();
-
-  //   for (int j = 1; j < i; ++j)
-  //   {
-  //     LED_RGB.setPixelColor(j - 1, LED_RGB.Color(0, 255, 0));
-  //     LED_RGB.setPixelColor(j, LED_RGB.Color(255, 0, 0));
-  //     delay(100);
-  //     LED_RGB.show();
-  //   }
-  // }
-
-  Serial.println("LED Animation End");
+  Serial.println("loop: after update");
 }
