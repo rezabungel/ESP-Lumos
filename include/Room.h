@@ -3,7 +3,7 @@
 #define _ROOM_H_
 
 #include "LightContainer.h"
-#include "RoomConfig.h"
+#include "config/RoomConfig.h"
 
 class Room : public LightContainer<ROOM_MAX_ELEMENTS>
 {

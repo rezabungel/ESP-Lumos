@@ -3,7 +3,7 @@
 #define _HOUSE_H_
 
 #include "LightContainer.h"
-#include "HouseConfig.h"
+#include "config/HouseConfig.h"
 
 class House : public LightContainer<HOUSE_MAX_ELEMENTS>
 {

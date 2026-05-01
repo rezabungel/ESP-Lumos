@@ -1,4 +1,4 @@
-#include "LittleFSConfig.h"
+#include "config/LittleFSConfig.h"
 #include "LittleFSService.h"
 
 bool LittleFSService::begin()

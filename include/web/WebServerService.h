@@ -4,7 +4,7 @@
 
 #include <ESPAsyncWebServer.h>
 #include <LittleFS.h>
-#include "WebServerConfig.h"
+#include "config/WebServerConfig.h"
 
 class WebServerService
 {

@@ -5,7 +5,7 @@
 #include <FastLED.h>
 #include <cstdint>
 #include "StripBase.h"
-#include "LedManagerConfig.h"
+#include "config/LedManagerConfig.h"
 
 class LedManager
 {

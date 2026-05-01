@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "WiFiConfig.h"
+#include "config/WiFiConfig.h"
 #include "WiFiService.h"
 #include "LittleFSService.h"
 #include "web/WebServerService.h"
