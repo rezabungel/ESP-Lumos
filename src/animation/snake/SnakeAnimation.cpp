@@ -1,4 +1,4 @@
-#include "SnakeAnimation.h"
+#include "animation/snake/SnakeAnimation.h"
 
 SnakeAnimation::SnakeAnimation(uint16_t speed, uint8_t snakeLength) : speed(speed), snakeLength(snakeLength), head(0), lastUpdate(0)
 {

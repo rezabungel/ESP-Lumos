@@ -8,7 +8,8 @@
 #include "Room.h"
 #include "LightGroup.h"
 #include "Strip.h"
-#include "SnakeAnimation.h"
+#include "animation/snake/SnakeAnimation.h"
+
 
 WebServerService webServer;
 

@@ -2,7 +2,7 @@
 #ifndef _SNAKE_ANIMATION_H_
 #define _SNAKE_ANIMATION_H_
 
-#include "Animation.h"
+#include "animation/Animation.h"
 
 class SnakeAnimation : public Animation
 {

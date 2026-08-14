@@ -6,7 +6,7 @@
 #include <cstdint>
 #include "StripBase.h"
 #include "LightElement.h"
-#include "Animation.h"
+#include "animation/Animation.h"
 
 #define LED_TYPE WS2815
 #define COLOR_ORDER RGB

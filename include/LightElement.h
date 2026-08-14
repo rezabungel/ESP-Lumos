@@ -3,7 +3,7 @@
 #define _LIGHT_ELEMENT_H_
 
 #include <cstdint>
-#include "Animation.h"
+#include "animation/Animation.h"
 
 class LightElement
 {
