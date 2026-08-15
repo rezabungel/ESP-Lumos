@@ -8,8 +8,7 @@
 #include "Room.h"
 #include "LightGroup.h"
 #include "Strip.h"
-#include "animation/snake/SnakeAnimation.h"
-
+#include "LightState.h"
 
 WebServerService webServer;
 
@@ -31,10 +30,41 @@ LightGroup lightGroup2("lightGroup2");
 Strip<46> strip1("strip1", 300);
 Strip<48> strip2("strip2", 300);
 
-// ---
-SnakeAnimation snake1(50, 40);
-SnakeAnimation snake2(10, 5);
-// ---
+// ============================================================
+// TEST STATE
+// ============================================================
+LightState createSnakeState(uint8_t r, uint8_t g, uint8_t b, uint16_t speed, uint16_t length)
+{
+  LightState state;
+
+  state.enabled = true;
+
+  state.color = {r, g, b};
+  state.brightness = 255;
+
+  state.animation.type = AnimationType::Snake;
+  state.animation.parameters.snake.speed = speed;
+  state.animation.parameters.snake.length = length;
+
+  return state;
+}
+
+LightState createStaticState(uint8_t r, uint8_t g, uint8_t b)
+{
+  LightState state;
+
+  state.enabled = true;
+
+  state.color = {r, g, b};
+  state.brightness = 255;
+
+  state.animation.type = AnimationType::None;
+
+  return state;
+}
+
+uint32_t testTimer = 0;
+uint8_t testStep = 0;
 
 void setup()
 {
@@ -82,6 +112,14 @@ void setup()
   // ========================================================
   // HOUSE HIERARCHY BUILD
   // Build hierarchy: House -> Room -> LightGroup -> Strip
+  // House
+  // ├── Room 1
+  // │   └── LightGroup 1
+  // │       └── Strip 1
+  // │
+  // └── Room 2
+  //     └── LightGroup 2
+  //         └── Strip 2
   // ========================================================
   myHouse.addElement(&room1);
   myHouse.addElement(&room2);
@@ -97,10 +135,13 @@ void setup()
   ledManager.addStrip(&strip1);
   ledManager.addStrip(&strip2);
 
-  // ---
-  strip1.setAnimation(&snake1);
-  strip2.setAnimation(&snake2);
-  // ---
+  // ========================================================
+  // INITIAL STATES
+  // ========================================================
+  strip1.setLightState(createSnakeState(255, 0, 0, 50, 40));
+  strip2.setLightState(createStaticState(0, 0, 255));
+
+  Serial.println("Light system initialized.");
 }
 
 void loop()
@@ -109,6 +150,88 @@ void loop()
 
   uint32_t now = millis();
   ledManager.update(now);
+
+  // ========================================================
+  // AUTOMATED TESTS
+  // ========================================================
+  if (now - testTimer < 5000)
+  {
+    return;
+  }
+  testTimer = now;
+
+  switch (testStep)
+  {
+  case 0: // TEST 1 - Change color of static strip
+    Serial.println("TEST 1: Change strip2 color to green");
+    strip2.setColor({0, 255, 0});
+    break;
+
+  case 1: // TEST 2 - Turn strip2 off
+    Serial.println("TEST 2: Turn strip2 OFF");
+    strip2.off();
+    break;
+
+  case 2: // TEST 3 - Turn strip2 on
+    Serial.println("TEST 3: Turn strip2 ON");
+    strip2.on();
+    break;
+
+  case 3: // TEST 4 - Change strip1 animation
+  {
+    Serial.println("TEST 4: Change strip1 animation");
+
+    AnimationState animationState;
+    animationState.type = AnimationType::Snake;
+    animationState.parameters.snake.speed = 150;
+    animationState.parameters.snake.length = 5;
+
+    strip1.setAnimationState(animationState);
+    break;
+  }
+
+  case 4: // TEST 5 - Change strip1 color
+    Serial.println("TEST 5: Change strip1 color to blue");
+    strip1.setColor({0, 0, 255});
+    break;
+
+  case 5: // TEST 6 - Turn strip1 off
+    Serial.println("TEST 6: Turn strip1 OFF");
+    strip1.off();
+    break;
+
+  case 6: // TEST 7 - Turn strip1 on
+    Serial.println("TEST 7: Turn strip1 ON");
+    strip1.on();
+    break;
+
+  case 7: // TEST 8 - Switch strip1 to static color
+    Serial.println("TEST 8: Disable animation");
+    strip1.setAnimationState(AnimationState{AnimationType::None, {}});
+    break;
+
+  case 8: // TEST 9 - Change static color
+    Serial.println("TEST 9: Change strip1 static color");
+    strip1.setColor({255, 255, 255});
+    break;
+
+  case 9: // TEST 10 - Turn everything off
+    Serial.println("TEST 10: Turn everything OFF");
+    strip1.off();
+    strip2.off();
+    break;
+
+  case 10: // TEST 11 - Turn everything on
+    Serial.println("TEST 11: Turn everything ON");
+    strip1.on();
+    strip2.on();
+    break;
+
+  default:
+    Serial.println("TEST COMPLETE");
+    break;
+  }
+  ++testStep;
 
   // Serial.println("loop: after update");
 }

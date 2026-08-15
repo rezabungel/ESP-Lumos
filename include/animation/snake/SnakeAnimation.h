@@ -3,22 +3,20 @@
 #define _SNAKE_ANIMATION_H_
 
 #include "animation/Animation.h"
+#include "SnakeParameters.h"
 
 class SnakeAnimation : public Animation
 {
 public:
-    SnakeAnimation(uint16_t speed, uint8_t snakeLength);
+    explicit SnakeAnimation(const SnakeParameters &parameters);
 
-    bool step(CRGB *leds, uint16_t length, uint32_t now) override;
-
-    void setSpeed(uint16_t s);
-    void setSnakeLength(uint8_t l);
+    bool step(const LightState &state, CRGB *leds, uint16_t length, uint32_t now) override;
 
 private:
-    uint16_t speed;      // milliseconds between each animation step
-    uint8_t snakeLength; // number of LEDs in snake
-    uint16_t head;       // current position of the snake's head
-    uint32_t lastUpdate; // timestamp of the last step (from millis())
+    SnakeParameters parameters;
+
+    uint16_t head;
+    uint32_t lastUpdate;
 };
 
 #endif // _SNAKE_ANIMATION_H_

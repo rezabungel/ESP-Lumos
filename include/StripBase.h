@@ -9,10 +9,7 @@ class StripBase
 public:
     virtual ~StripBase() = default;
 
-    virtual bool needsUpdate() const = 0;
-    virtual void resetUpdateFlag() = 0;
-    virtual bool hasAnimation() const = 0;
-    virtual bool stepAnimation(uint32_t now) = 0;
+    virtual bool render(uint32_t now) = 0;
 };
 
 #endif // _STRIP_BASE_H_

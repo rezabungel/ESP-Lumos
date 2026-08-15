@@ -3,7 +3,8 @@
 #define _LIGHT_ELEMENT_H_
 
 #include <cstdint>
-#include "animation/Animation.h"
+#include "Color.h"
+#include "LightState.h"
 
 class LightElement
 {
@@ -12,9 +13,14 @@ public:
 
     virtual const char *getName() const = 0;
 
-    virtual void setColor(uint8_t r, uint8_t g, uint8_t b) = 0;
-    virtual void clear() = 0;
-    virtual void setAnimation(Animation *anim) = 0;
+    virtual void setLightState(const LightState &lightState) = 0;
+
+    virtual void on() = 0;
+    virtual void off() = 0;
+
+    virtual void setColor(const Color &color) = 0;
+    virtual void setBrightness(uint8_t brightness) = 0;
+    virtual void setAnimationState(const AnimationState &animationState) = 0;
 };
 
 #endif // _LIGHT_ELEMENT_H_

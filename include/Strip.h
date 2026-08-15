@@ -6,7 +6,8 @@
 #include <cstdint>
 #include "StripBase.h"
 #include "LightElement.h"
-#include "animation/Animation.h"
+#include "LightState.h"
+#include "animation/AnimationInstance.h"
 
 #define LED_TYPE WS2815
 #define COLOR_ORDER RGB
@@ -23,23 +24,27 @@ public:
 
     const char *getName() const override;
 
-    void setColor(uint8_t r, uint8_t g, uint8_t b) override;
-    void clear() override;
+    const LightState &getLightState() const;
+    void setLightState(const LightState &lightState) override;
 
-    bool needsUpdate() const override;
-    void resetUpdateFlag() override;
+    void on() override;
+    void off() override;
 
-    void setAnimation(Animation *anim) override;
-    bool hasAnimation() const override;
-    bool stepAnimation(uint32_t now) override;
+    void setColor(const Color &color) override;
+    void setBrightness(uint8_t brightness) override;
+    void setAnimationState(const AnimationState &animationState) override;
+
+    bool render(uint32_t now) override;
 
 private:
     const char *const name;
     uint16_t length;
     CRGB *leds;
-    bool dirty = true;
 
-    Animation *animation = nullptr;
+    LightState lightState;
+    AnimationInstance animationInstance;
+
+    bool dirty = true;
 };
 
 #include "Strip.tpp"

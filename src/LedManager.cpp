@@ -18,32 +18,16 @@ bool LedManager::addStrip(StripBase *strip)
 void LedManager::update(uint32_t now)
 {
     bool needShow = false;
-
-    for (uint8_t i = 0; i < count; i++)
+    for (uint8_t i = 0; i < count; ++i)
     {
-        StripBase *strip = strips[i];
-
-        if (strip->hasAnimation())
-        {
-            if (strip->stepAnimation(now))
-            {
-                needShow = true;
-            }
-        }
-
-        if (strip->needsUpdate())
+        if (strips[i]->render(now))
         {
             needShow = true;
         }
     }
 
-    if (!needShow)
-        return;
-
-    FastLED.show();
-
-    for (uint8_t i = 0; i < count; i++)
+    if (needShow)
     {
-        strips[i]->resetUpdateFlag();
+        FastLED.show();
     }
 }

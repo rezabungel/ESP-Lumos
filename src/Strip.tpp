@@ -1,7 +1,6 @@
 template <uint8_t PIN>
-Strip<PIN>::Strip(const char *name, uint16_t length) : name(name), length(length)
+Strip<PIN>::Strip(const char *name, uint16_t length) : name(name), length(length), leds(new CRGB[length])
 {
-    leds = new CRGB[length];
     FastLED.addLeds<LED_TYPE, PIN, COLOR_ORDER>(leds, length);
 }
 
@@ -30,56 +29,88 @@ const char *Strip<PIN>::getName() const
 }
 
 template <uint8_t PIN>
-void Strip<PIN>::setColor(uint8_t r, uint8_t g, uint8_t b)
+const LightState &Strip<PIN>::getLightState() const
 {
-    animation = nullptr;
-    fill_solid(leds, length, CRGB(r, g, b));
-    dirty = true;
+    return lightState;
 }
 
 template <uint8_t PIN>
-void Strip<PIN>::clear()
+void Strip<PIN>::setLightState(const LightState &lightState)
 {
-    fill_solid(leds, length, CRGB::Black);
-    dirty = true;
-}
-
-template <uint8_t PIN>
-bool Strip<PIN>::needsUpdate() const
-{
-    return dirty;
-}
-
-template <uint8_t PIN>
-void Strip<PIN>::resetUpdateFlag()
-{
-    dirty = false;
-}
-
-template <uint8_t PIN>
-void Strip<PIN>::setAnimation(Animation *anim)
-{
-    animation = anim;
-    dirty = true;
-}
-
-template <uint8_t PIN>
-bool Strip<PIN>::hasAnimation() const
-{
-    return animation != nullptr;
-}
-
-template <uint8_t PIN>
-bool Strip<PIN>::stepAnimation(uint32_t now)
-{
-    if (animation)
+    if (!animationInstance.setAnimationState(lightState.animation))
     {
-        bool changed = animation->step(leds, length, now);
-        if (changed)
-        {
-            dirty = true;
-        }
-        return changed;
+        return;
     }
-    return false;
+
+    this->lightState = lightState;
+    dirty = true;
+}
+
+template <uint8_t PIN>
+void Strip<PIN>::on()
+{
+    lightState.enabled = true;
+    dirty = true;
+}
+
+template <uint8_t PIN>
+void Strip<PIN>::off()
+{
+    lightState.enabled = false;
+    dirty = true;
+}
+
+template <uint8_t PIN>
+void Strip<PIN>::setColor(const Color &color)
+{
+    lightState.color = color;
+    dirty = true;
+}
+
+template <uint8_t PIN>
+void Strip<PIN>::setBrightness(uint8_t brightness)
+{
+    lightState.brightness = brightness;
+    dirty = true;
+}
+
+template <uint8_t PIN>
+void Strip<PIN>::setAnimationState(const AnimationState &animationState)
+{
+    LightState newLightState = lightState;
+    newLightState.animation = animationState;
+
+    setLightState(newLightState);
+}
+
+template <uint8_t PIN>
+bool Strip<PIN>::render(uint32_t now)
+{
+    if (!lightState.enabled)
+    {
+        if (!dirty)
+        {
+            return false;
+        }
+
+        fill_solid(leds, length, CRGB::Black);
+        dirty = false;
+
+        return true;
+    }
+
+    if (lightState.animation.type == AnimationType::None)
+    {
+        if (!dirty)
+        {
+            return false;
+        }
+
+        fill_solid(leds, length, CRGB(lightState.color.r, lightState.color.g, lightState.color.b));
+        dirty = false;
+
+        return true;
+    }
+
+    return animationInstance.step(lightState, leds, length, now);
 }
