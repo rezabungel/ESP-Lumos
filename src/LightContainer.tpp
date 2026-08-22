@@ -1,6 +1,12 @@
 template <uint8_t MAX_ELEMENTS>
-LightContainer<MAX_ELEMENTS>::LightContainer(const char *name) : name(name), elementCount(0)
+LightContainer<MAX_ELEMENTS>::LightContainer(const char *id, const char *name) : id(id), name(name), elementCount(0)
 {
+}
+
+template <uint8_t MAX_ELEMENTS>
+const char *LightContainer<MAX_ELEMENTS>::getId() const
+{
+    return id;
 }
 
 template <uint8_t MAX_ELEMENTS>

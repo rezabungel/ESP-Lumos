@@ -8,7 +8,7 @@
 class Room : public LightContainer<ROOM_MAX_ELEMENTS>
 {
 public:
-    explicit Room(const char *name) : LightContainer<ROOM_MAX_ELEMENTS>(name) {}
+    explicit Room(const char *id, const char *name) : LightContainer<ROOM_MAX_ELEMENTS>(id, name) {}
 };
 
 #endif // _ROOM_H_

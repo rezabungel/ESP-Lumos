@@ -11,6 +11,7 @@ class LightElement
 public:
     virtual ~LightElement() = default;
 
+    virtual const char *getId() const = 0;
     virtual const char *getName() const = 0;
 
     virtual void setLightState(const LightState &lightState) = 0;

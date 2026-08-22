@@ -22,13 +22,13 @@ LedManager ledManager;
 //  OBJECTS INITIALIZATION
 //  Instantiate all objects: House, Room, LightGroup, Strip
 // ============================================================
-House myHouse("myHouse");
-Room room1("room1");
-Room room2("room2");
-LightGroup lightGroup1("lightGroup1");
-LightGroup lightGroup2("lightGroup2");
-Strip<46> strip1("strip1", 300);
-Strip<48> strip2("strip2", 300);
+House myHouse("house", "house");
+Room room1("room1", "name-room1");
+Room room2("room2", "name-room2");
+LightGroup lightGroup1("lightGroup1", "name-lightGroup1");
+LightGroup lightGroup2("lightGroup2", "name-lightGroup2");
+Strip<46> strip1("strip1", "name-strip1", 300);
+Strip<48> strip2("strip2", "name-strip2", 300);
 
 // ============================================================
 // TEST STATE

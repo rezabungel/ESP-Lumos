@@ -8,7 +8,7 @@
 class LightGroup : public LightContainer<LIGHT_GROUP_MAX_STRIPS>
 {
 public:
-    explicit LightGroup(const char *name) : LightContainer<LIGHT_GROUP_MAX_STRIPS>(name) {}
+    explicit LightGroup(const char *id, const char *name) : LightContainer<LIGHT_GROUP_MAX_STRIPS>(id, name) {}
 };
 
 #endif // _LIGHT_GROUP_H_

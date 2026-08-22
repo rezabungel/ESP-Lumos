@@ -16,12 +16,13 @@ template <uint8_t PIN>
 class Strip : public StripBase, public LightElement
 {
 public:
-    explicit Strip(const char *name, uint16_t length);
+    explicit Strip(const char *id, const char *name, uint16_t length);
     ~Strip();
 
     CRGB *data();
     uint16_t size() const;
 
+    const char *getId() const override;
     const char *getName() const override;
 
     const LightState &getLightState() const;
@@ -37,6 +38,7 @@ public:
     bool render(uint32_t now) override;
 
 private:
+    const char *const id;
     const char *const name;
     uint16_t length;
     CRGB *leds;
