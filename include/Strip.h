@@ -7,6 +7,7 @@
 #include "StripBase.h"
 #include "LightElement.h"
 #include "LightState.h"
+#include "LightElementType.h"
 #include "animation/AnimationInstance.h"
 
 #define LED_TYPE WS2815
@@ -24,6 +25,7 @@ public:
 
     const char *getId() const override;
     const char *getName() const override;
+    LightElementType getType() const override;
 
     const LightState &getLightState() const;
     void setLightState(const LightState &lightState) override;

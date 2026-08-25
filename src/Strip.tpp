@@ -35,6 +35,12 @@ const char *Strip<PIN>::getName() const
 }
 
 template <uint8_t PIN>
+LightElementType Strip<PIN>::getType() const
+{
+    return LightElementType::Strip;
+}
+
+template <uint8_t PIN>
 const LightState &Strip<PIN>::getLightState() const
 {
     return lightState;
