@@ -57,17 +57,17 @@ check-venv:
 # Build and upload
 build: check-venv
 	@echo "Starting build..."
-	$(pio) run
+	$(pio) run -e esp32-s3-devkitc-1
 	@echo "Build completed successfully."
 
 upload: check-venv
 	@echo "Starting upload (build will run if necessary)..."
-	$(pio) run --target upload
+	$(pio) run -e esp32-s3-devkitc-1 --target upload
 	@echo "Upload completed successfully."
 
 fs: check-venv
 	@echo "Starting filesystem upload (build will run if necessary)..."
-	$(pio) run --target uploadfs
+	$(pio) run -e esp32-s3-devkitc-1 --target uploadfs
 	@echo "Filesystem upload completed successfully."
 
 monitor: check-venv
