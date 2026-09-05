@@ -9,6 +9,9 @@ venv_python = $(venv_bin)/python
 # Paths
 secrets_dir = secrets
 wifi_env_file = $(secrets_dir)/set_wifi_env.sh
+# PlatformIO environments
+esp_env = esp32-s3-devkitc-1
+test_env = native
 
 # Initialization targets
 init-venv:
@@ -57,18 +60,27 @@ check-venv:
 # Build and upload
 build: check-venv
 	@echo "Starting build..."
-	$(pio) run -e esp32-s3-devkitc-1
+	$(pio) run -e $(esp_env)
 	@echo "Build completed successfully."
 
 upload: check-venv
 	@echo "Starting upload (build will run if necessary)..."
-	$(pio) run -e esp32-s3-devkitc-1 --target upload
+	$(pio) run -e $(esp_env) --target upload
 	@echo "Upload completed successfully."
 
 fs: check-venv
 	@echo "Starting filesystem upload (build will run if necessary)..."
-	$(pio) run -e esp32-s3-devkitc-1 --target uploadfs
+	$(pio) run -e $(esp_env) --target uploadfs
 	@echo "Filesystem upload completed successfully."
+
+# Unit tests
+test: check-venv
+	@echo "Starting unit tests..."
+	$(pio) test -e $(test_env) -v
+	@echo "Unit tests completed successfully."
+
+# Tests + build
+build-check: test build
 
 monitor: check-venv
 	@echo "Starting monitor..."
