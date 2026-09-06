@@ -150,6 +150,128 @@ void test_nested_object_and_array()
         json.data());
 }
 
+void test_cannot_begin_object_inside_object_without_name()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginObject());
+
+    TEST_ASSERT_FALSE(json.beginObject());
+
+    TEST_ASSERT_TRUE(json.endObject());
+
+    TEST_ASSERT_EQUAL_STRING("{}", json.data());
+}
+
+void test_cannot_begin_array_inside_object_without_name()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginObject());
+
+    TEST_ASSERT_FALSE(json.beginArray());
+
+    TEST_ASSERT_TRUE(json.endObject());
+
+    TEST_ASSERT_EQUAL_STRING("{}", json.data());
+}
+
+void test_failed_begin_object_does_not_break_builder()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginObject());
+
+    TEST_ASSERT_FALSE(json.beginObject());
+
+    TEST_ASSERT_TRUE(json.add("id", "house"));
+    TEST_ASSERT_TRUE(json.endObject());
+
+    TEST_ASSERT_EQUAL_STRING(
+        "{\"id\":\"house\"}",
+        json.data());
+}
+
+void test_failed_begin_array_does_not_break_builder()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginObject());
+
+    TEST_ASSERT_FALSE(json.beginArray());
+
+    TEST_ASSERT_TRUE(json.add("id", "house"));
+    TEST_ASSERT_TRUE(json.endObject());
+
+    TEST_ASSERT_EQUAL_STRING(
+        "{\"id\":\"house\"}",
+        json.data());
+}
+
+void test_can_begin_object_inside_object_with_name()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginObject());
+
+    TEST_ASSERT_TRUE(json.beginObject("children"));
+    TEST_ASSERT_TRUE(json.endObject());
+
+    TEST_ASSERT_TRUE(json.endObject());
+
+    TEST_ASSERT_EQUAL_STRING(
+        "{\"children\":{}}",
+        json.data());
+}
+
+void test_can_begin_array_inside_object_with_name()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginObject());
+
+    TEST_ASSERT_TRUE(json.beginArray("children"));
+    TEST_ASSERT_TRUE(json.endArray());
+
+    TEST_ASSERT_TRUE(json.endObject());
+
+    TEST_ASSERT_EQUAL_STRING(
+        "{\"children\":[]}",
+        json.data());
+}
+
+void test_can_begin_object_inside_array()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginArray());
+
+    TEST_ASSERT_TRUE(json.beginObject());
+    TEST_ASSERT_TRUE(json.endObject());
+
+    TEST_ASSERT_TRUE(json.endArray());
+
+    TEST_ASSERT_EQUAL_STRING(
+        "[{}]",
+        json.data());
+}
+
+void test_can_begin_array_inside_array()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginArray());
+
+    TEST_ASSERT_TRUE(json.beginArray());
+    TEST_ASSERT_TRUE(json.endArray());
+
+    TEST_ASSERT_TRUE(json.endArray());
+
+    TEST_ASSERT_EQUAL_STRING(
+        "[[]]",
+        json.data());
+}
+
 void test_cannot_close_empty_builder()
 {
     JsonBuilder json;
@@ -198,6 +320,87 @@ void test_cannot_add_field_to_array()
     TEST_ASSERT_TRUE(json.endArray());
 
     TEST_ASSERT_EQUAL_STRING("[]", json.data());
+}
+
+void test_max_depth()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginObject());    // 1
+    TEST_ASSERT_TRUE(json.beginArray("a"));  // 2
+    TEST_ASSERT_TRUE(json.beginObject());    // 3
+    TEST_ASSERT_TRUE(json.beginArray("b"));  // 4
+    TEST_ASSERT_TRUE(json.beginObject());    // 5
+    TEST_ASSERT_TRUE(json.beginArray("c"));  // 6
+    TEST_ASSERT_TRUE(json.beginObject());    // 7
+    TEST_ASSERT_TRUE(json.beginObject("d")); // 8
+
+    TEST_ASSERT_FALSE(json.beginObject());
+
+    TEST_ASSERT_TRUE(json.endObject());
+    TEST_ASSERT_TRUE(json.endObject());
+    TEST_ASSERT_TRUE(json.endArray());
+    TEST_ASSERT_TRUE(json.endObject());
+    TEST_ASSERT_TRUE(json.endArray());
+    TEST_ASSERT_TRUE(json.endObject());
+    TEST_ASSERT_TRUE(json.endArray());
+    TEST_ASSERT_TRUE(json.endObject());
+
+    TEST_ASSERT_EQUAL_STRING(
+        "{\"a\":[{\"b\":[{\"c\":[{\"d\":{}}]}]}]}",
+        json.data());
+}
+
+void test_add_name_returns_false_on_buffer_overflow()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginObject());
+
+    char name[JSON_BUILDER_BUFFER_SIZE];
+    memset(name, 'x', sizeof(name) - 1);
+    name[sizeof(name) - 1] = '\0';
+
+    TEST_ASSERT_FALSE(json.add(name));
+}
+
+void test_add_name_and_value_returns_false_on_buffer_overflow()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginObject());
+
+    char value[JSON_BUILDER_BUFFER_SIZE];
+    memset(value, 'x', sizeof(value) - 1);
+    value[sizeof(value) - 1] = '\0';
+
+    TEST_ASSERT_FALSE(json.add("value", value));
+}
+
+void test_begin_object_returns_false_on_buffer_overflow()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginObject());
+
+    char name[JSON_BUILDER_BUFFER_SIZE];
+    memset(name, 'x', sizeof(name) - 1);
+    name[sizeof(name) - 1] = '\0';
+
+    TEST_ASSERT_FALSE(json.beginObject(name));
+}
+
+void test_begin_array_returns_false_on_buffer_overflow()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginObject());
+
+    char name[JSON_BUILDER_BUFFER_SIZE];
+    memset(name, 'x', sizeof(name) - 1);
+    name[sizeof(name) - 1] = '\0';
+
+    TEST_ASSERT_FALSE(json.beginArray(name));
 }
 
 void test_data_is_null_terminated()
@@ -249,10 +452,28 @@ int main()
     RUN_TEST(test_nested_array);
     RUN_TEST(test_nested_object_and_array);
 
+    RUN_TEST(test_cannot_begin_object_inside_object_without_name);
+    RUN_TEST(test_cannot_begin_array_inside_object_without_name);
+
+    RUN_TEST(test_failed_begin_object_does_not_break_builder);
+    RUN_TEST(test_failed_begin_array_does_not_break_builder);
+
+    RUN_TEST(test_can_begin_object_inside_object_with_name);
+    RUN_TEST(test_can_begin_array_inside_object_with_name);
+    RUN_TEST(test_can_begin_object_inside_array);
+    RUN_TEST(test_can_begin_array_inside_array);
+
     RUN_TEST(test_cannot_close_empty_builder);
     RUN_TEST(test_cannot_close_object_as_array);
     RUN_TEST(test_cannot_close_array_as_object);
     RUN_TEST(test_cannot_add_field_to_array);
+
+    RUN_TEST(test_max_depth);
+
+    RUN_TEST(test_add_name_returns_false_on_buffer_overflow);
+    RUN_TEST(test_add_name_and_value_returns_false_on_buffer_overflow);
+    RUN_TEST(test_begin_object_returns_false_on_buffer_overflow);
+    RUN_TEST(test_begin_array_returns_false_on_buffer_overflow);
 
     RUN_TEST(test_data_is_null_terminated);
 

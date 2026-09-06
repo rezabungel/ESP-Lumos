@@ -46,6 +46,11 @@ private:
     Context contexts[JSON_BUILDER_MAX_DEPTH];
     uint8_t level;
 
+    bool canOpenUnnamedContainer() const;
+
+    bool openObject();
+    bool openArray();
+
     bool prepareArrayElement();
 
     bool append(char value);

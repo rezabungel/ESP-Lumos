@@ -7,27 +7,12 @@ JsonBuilder::JsonBuilder() : position(0), level(0)
 
 bool JsonBuilder::beginObject()
 {
-    if (level >= JSON_BUILDER_MAX_DEPTH)
+    if (!canOpenUnnamedContainer())
     {
         return false;
     }
 
-    if (!prepareArrayElement())
-    {
-        return false;
-    }
-
-    if (!append('{'))
-    {
-        return false;
-    }
-
-    contexts[level].contextType = Context::ContextType::Object;
-    contexts[level].hasElements = false;
-
-    ++level;
-
-    return true;
+    return openObject();
 }
 
 bool JsonBuilder::beginObject(const char *name)
@@ -37,7 +22,7 @@ bool JsonBuilder::beginObject(const char *name)
         return false;
     }
 
-    return beginObject();
+    return openObject();
 }
 
 bool JsonBuilder::endObject()
@@ -64,27 +49,12 @@ bool JsonBuilder::endObject()
 
 bool JsonBuilder::beginArray()
 {
-    if (level >= JSON_BUILDER_MAX_DEPTH)
+    if (!canOpenUnnamedContainer())
     {
         return false;
     }
 
-    if (!prepareArrayElement())
-    {
-        return false;
-    }
-
-    if (!append('['))
-    {
-        return false;
-    }
-
-    contexts[level].contextType = Context::ContextType::Array;
-    contexts[level].hasElements = false;
-
-    ++level;
-
-    return true;
+    return openArray();
 }
 
 bool JsonBuilder::beginArray(const char *name)
@@ -94,7 +64,7 @@ bool JsonBuilder::beginArray(const char *name)
         return false;
     }
 
-    return beginArray();
+    return openArray();
 }
 
 bool JsonBuilder::endArray()
@@ -174,6 +144,66 @@ const char *JsonBuilder::data() const
 uint16_t JsonBuilder::size() const
 {
     return position;
+}
+
+bool JsonBuilder::canOpenUnnamedContainer() const
+{
+    if (level == 0)
+    {
+        return true;
+    }
+
+    return contexts[level - 1].contextType != Context::ContextType::Object;
+}
+
+bool JsonBuilder::openObject()
+{
+    if (level >= JSON_BUILDER_MAX_DEPTH)
+    {
+        return false;
+    }
+
+    if (!prepareArrayElement())
+    {
+        return false;
+    }
+
+    if (!append('{'))
+    {
+        return false;
+    }
+
+    contexts[level].contextType = Context::ContextType::Object;
+    contexts[level].hasElements = false;
+
+    ++level;
+
+    return true;
+}
+
+bool JsonBuilder::openArray()
+{
+    if (level >= JSON_BUILDER_MAX_DEPTH)
+    {
+        return false;
+    }
+
+    if (!prepareArrayElement())
+    {
+        return false;
+    }
+
+    if (!append('['))
+    {
+        return false;
+    }
+
+    contexts[level].contextType = Context::ContextType::Array;
+    contexts[level].hasElements = false;
+
+    ++level;
+
+    return true;
 }
 
 bool JsonBuilder::prepareArrayElement()
