@@ -40,6 +40,91 @@ void test_object_fields()
         json.data());
 }
 
+void test_object_bool_field()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginObject());
+
+    TEST_ASSERT_TRUE(json.add("enabled", true));
+    TEST_ASSERT_TRUE(json.add("disabled", false));
+
+    TEST_ASSERT_TRUE(json.endObject());
+
+    TEST_ASSERT_EQUAL_STRING(
+        "{\"enabled\":true,\"disabled\":false}",
+        json.data());
+}
+
+void test_object_uint8_field()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginObject());
+
+    TEST_ASSERT_TRUE(json.add("zero", static_cast<uint8_t>(0)));
+    TEST_ASSERT_TRUE(json.add("value", static_cast<uint8_t>(128)));
+    TEST_ASSERT_TRUE(json.add("max", static_cast<uint8_t>(255)));
+
+    TEST_ASSERT_TRUE(json.endObject());
+
+    TEST_ASSERT_EQUAL_STRING(
+        "{\"zero\":0,\"value\":128,\"max\":255}",
+        json.data());
+}
+
+void test_object_uint16_field()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginObject());
+
+    TEST_ASSERT_TRUE(json.add("zero", static_cast<uint16_t>(0)));
+    TEST_ASSERT_TRUE(json.add("value", static_cast<uint16_t>(12345)));
+    TEST_ASSERT_TRUE(json.add("max", static_cast<uint16_t>(65535)));
+
+    TEST_ASSERT_TRUE(json.endObject());
+
+    TEST_ASSERT_EQUAL_STRING(
+        "{\"zero\":0,\"value\":12345,\"max\":65535}",
+        json.data());
+}
+
+void test_object_mixed_field_types()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginObject());
+
+    TEST_ASSERT_TRUE(json.add("id", "strip1"));
+    TEST_ASSERT_TRUE(json.add("enabled", true));
+    TEST_ASSERT_TRUE(json.add("r", static_cast<uint8_t>(255)));
+    TEST_ASSERT_TRUE(json.add("brightness", static_cast<uint8_t>(128)));
+    TEST_ASSERT_TRUE(json.add("speed", static_cast<uint16_t>(500)));
+
+    TEST_ASSERT_TRUE(json.endObject());
+
+    TEST_ASSERT_EQUAL_STRING(
+        "{\"id\":\"strip1\",\"enabled\":true,\"r\":255,"
+        "\"brightness\":128,\"speed\":500}",
+        json.data());
+}
+
+void test_object_empty_string_value()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginObject());
+
+    TEST_ASSERT_TRUE(json.add("name", ""));
+
+    TEST_ASSERT_TRUE(json.endObject());
+
+    TEST_ASSERT_EQUAL_STRING(
+        "{\"name\":\"\"}",
+        json.data());
+}
+
 void test_single_object_in_array()
 {
     JsonBuilder json;
@@ -444,6 +529,12 @@ int main()
     RUN_TEST(test_empty_array);
 
     RUN_TEST(test_object_fields);
+
+    RUN_TEST(test_object_bool_field);
+    RUN_TEST(test_object_uint8_field);
+    RUN_TEST(test_object_uint16_field);
+    RUN_TEST(test_object_mixed_field_types);
+    RUN_TEST(test_object_empty_string_value);
 
     RUN_TEST(test_single_object_in_array);
     RUN_TEST(test_multiple_objects_in_array);

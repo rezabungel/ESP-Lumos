@@ -136,6 +136,42 @@ bool JsonBuilder::add(const char *name, const char *value)
     return true;
 }
 
+bool JsonBuilder::add(const char *name, bool value)
+{
+    if (!add(name))
+    {
+        return false;
+    }
+
+    return append(value ? "true" : "false");
+}
+
+bool JsonBuilder::add(const char *name, uint8_t value)
+{
+    if (!add(name))
+    {
+        return false;
+    }
+
+    char number[4];
+    snprintf(number, sizeof(number), "%u", value);
+
+    return append(number);
+}
+
+bool JsonBuilder::add(const char *name, uint16_t value)
+{
+    if (!add(name))
+    {
+        return false;
+    }
+
+    char number[6];
+    snprintf(number, sizeof(number), "%u", value);
+
+    return append(number);
+}
+
 const char *JsonBuilder::data() const
 {
     return buffer;

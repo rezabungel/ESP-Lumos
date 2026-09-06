@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <cstdio>
 #include "config/JsonBuilderConfig.h"
 
 class JsonBuilder
@@ -23,6 +24,9 @@ public:
 
     bool add(const char *name);
     bool add(const char *name, const char *value);
+    bool add(const char *name, bool value);
+    bool add(const char *name, uint8_t value);
+    bool add(const char *name, uint16_t value);
 
     const char *data() const;
     uint16_t size() const;
