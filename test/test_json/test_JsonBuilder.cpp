@@ -521,10 +521,8 @@ void test_multiple_builders_are_independent()
         json2.data());
 }
 
-int main()
+void run_json_builder_tests()
 {
-    UNITY_BEGIN();
-
     RUN_TEST(test_empty_object);
     RUN_TEST(test_empty_array);
 
@@ -569,6 +567,4 @@ int main()
     RUN_TEST(test_data_is_null_terminated);
 
     RUN_TEST(test_multiple_builders_are_independent);
-
-    return UNITY_END();
 }
