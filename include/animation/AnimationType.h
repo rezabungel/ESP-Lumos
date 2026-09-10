@@ -11,4 +11,6 @@ enum class AnimationType : uint8_t
     Breathing
 };
 
+const char *animationTypeToString(AnimationType type);
+
 #endif // _ANIMATION_TYPE_H_
