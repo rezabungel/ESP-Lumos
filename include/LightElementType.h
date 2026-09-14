@@ -12,4 +12,6 @@ enum class LightElementType : uint8_t
     Strip
 };
 
+const char *lightElementTypeToString(LightElementType type);
+
 #endif // _LIGHT_ELEMENT_TYPE_H_

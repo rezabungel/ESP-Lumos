@@ -6,6 +6,7 @@
 #include "Color.h"
 #include "LightState.h"
 #include "LightElementType.h"
+#include "json/JsonBuilder.h"
 
 class LightElement
 {
@@ -15,6 +16,8 @@ public:
     virtual const char *getId() const = 0;
     virtual const char *getName() const = 0;
     virtual LightElementType getType() const = 0;
+
+    virtual bool toJson(JsonBuilder &json) const = 0;
 
     virtual void setLightState(const LightState &lightState) = 0;
 

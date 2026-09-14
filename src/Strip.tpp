@@ -59,6 +59,37 @@ void Strip<PIN>::setLightState(const LightState &lightState)
 }
 
 template <uint8_t PIN>
+bool Strip<PIN>::toJson(JsonBuilder &json) const
+{
+    if (!json.beginObject())
+    {
+        return false;
+    }
+
+    if (!json.add("id", id))
+    {
+        return false;
+    }
+
+    if (!json.add("name", name))
+    {
+        return false;
+    }
+
+    if (!json.add("type", lightElementTypeToString(getType())))
+    {
+        return false;
+    }
+
+    if (!lightState.toJson(json))
+    {
+        return false;
+    }
+
+    return json.endObject();
+}
+
+template <uint8_t PIN>
 void Strip<PIN>::on()
 {
     lightState.enabled = true;

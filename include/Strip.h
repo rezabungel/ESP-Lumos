@@ -9,6 +9,7 @@
 #include "LightState.h"
 #include "LightElementType.h"
 #include "animation/AnimationInstance.h"
+#include "json/JsonBuilder.h"
 
 #define LED_TYPE WS2815
 #define COLOR_ORDER RGB
@@ -29,6 +30,8 @@ public:
 
     const LightState &getLightState() const;
     void setLightState(const LightState &lightState) override;
+
+    bool toJson(JsonBuilder &json) const override;
 
     void on() override;
     void off() override;

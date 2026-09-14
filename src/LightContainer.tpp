@@ -16,6 +16,50 @@ const char *LightContainer<MAX_ELEMENTS>::getName() const
 }
 
 template <uint8_t MAX_ELEMENTS>
+bool LightContainer<MAX_ELEMENTS>::toJson(JsonBuilder &json) const
+{
+    if (!json.beginObject())
+    {
+        return false;
+    }
+
+    if (!json.add("id", id))
+    {
+        return false;
+    }
+
+    if (!json.add("name", name))
+    {
+        return false;
+    }
+
+    if (!json.add("type", lightElementTypeToString(getType())))
+    {
+        return false;
+    }
+
+    if (!json.beginArray("children"))
+    {
+        return false;
+    }
+
+    for (uint8_t i = 0; i < elementCount; ++i)
+    {
+        if (!elements[i]->toJson(json))
+        {
+            return false;
+        }
+    }
+
+    if (!json.endArray())
+    {
+        return false;
+    }
+
+    return json.endObject();
+}
+
+template <uint8_t MAX_ELEMENTS>
 void LightContainer<MAX_ELEMENTS>::setLightState(const LightState &lightState)
 {
     for (uint8_t i = 0; i < elementCount; ++i)
