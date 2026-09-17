@@ -419,9 +419,13 @@ void test_max_depth()
     TEST_ASSERT_TRUE(json.beginArray("c"));  // 6
     TEST_ASSERT_TRUE(json.beginObject());    // 7
     TEST_ASSERT_TRUE(json.beginObject("d")); // 8
+    TEST_ASSERT_TRUE(json.beginObject("e")); // 9
+    TEST_ASSERT_TRUE(json.beginObject("f")); // 10
 
     TEST_ASSERT_FALSE(json.beginObject());
 
+    TEST_ASSERT_TRUE(json.endObject());
+    TEST_ASSERT_TRUE(json.endObject());
     TEST_ASSERT_TRUE(json.endObject());
     TEST_ASSERT_TRUE(json.endObject());
     TEST_ASSERT_TRUE(json.endArray());
@@ -432,7 +436,7 @@ void test_max_depth()
     TEST_ASSERT_TRUE(json.endObject());
 
     TEST_ASSERT_EQUAL_STRING(
-        "{\"a\":[{\"b\":[{\"c\":[{\"d\":{}}]}]}]}",
+        "{\"a\":[{\"b\":[{\"c\":[{\"d\":{\"e\":{\"f\":{}}}}]}]}]}",
         json.data());
 }
 
