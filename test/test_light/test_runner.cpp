@@ -5,6 +5,7 @@ extern void run_light_state_tests();
 extern void run_house_tests();
 extern void run_room_tests();
 extern void run_light_group_tests();
+extern void run_strip_tests();
 
 void setUp()
 {
@@ -24,6 +25,7 @@ int main()
     run_house_tests();
     run_room_tests();
     run_light_group_tests();
+    run_strip_tests();
 
     return UNITY_END();
 }
