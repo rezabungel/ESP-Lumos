@@ -25,9 +25,12 @@
 //               -> children(Array)
 //                  -> Strip(Object)
 //                     -> state(Object)
+//                        -> animation(Object)
+//                           -> parameters(Object)
 //
-// Maximum depth = 8:
-// Object -> Array -> Object -> Array -> Object -> Array -> Object -> Object
+// Maximum depth = 10:
+// Object -> Array -> Object -> Array -> Object -> Array -> Object
+// -> Object -> Object -> Object
 
 #if (JSON_BUILDER_BUFFER_SIZE < 2) || (JSON_BUILDER_BUFFER_SIZE > 65535)
   #error "JSON_BUILDER_BUFFER_SIZE must be in range [2, 65535]."
