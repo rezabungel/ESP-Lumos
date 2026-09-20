@@ -28,6 +28,11 @@ void LedManager::update(uint32_t now)
 
     if (needShow)
     {
-        FastLED.show();
+        show();
     }
+}
+
+void LedManager::show()
+{
+    FastLED.show();
 }

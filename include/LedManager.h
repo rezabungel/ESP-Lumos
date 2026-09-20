@@ -17,6 +17,9 @@ public:
     bool addStrip(StripBase *strip);
     void update(uint32_t now);
 
+protected:
+    virtual void show();
+
 private:
     StripBase *strips[MAX_STRIPS];
     uint8_t count;
