@@ -3,6 +3,7 @@
 extern void run_animation_state_tests();
 extern void run_animation_type_tests();
 extern void run_snake_animation_tests();
+extern void run_animation_factory_tests();
 
 void setUp()
 {
@@ -19,6 +20,7 @@ int main()
     run_animation_state_tests();
     run_animation_type_tests();
     run_snake_animation_tests();
+    run_animation_factory_tests();
 
     return UNITY_END();
 }
