@@ -1,6 +1,7 @@
 template <uint8_t PIN>
 Strip<PIN>::Strip(const char *id, const char *name, uint16_t length) : id(id), name(name), length(length), leds(new CRGB[length])
 {
+    fill_solid(leds, length, CRGB::Black);
     FastLED.addLeds<LED_TYPE, PIN, COLOR_ORDER>(leds, length);
 }
 
