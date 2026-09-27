@@ -57,6 +57,21 @@ check-venv:
 		exit 1; \
 	fi
 
+# Git hooks
+enable-git-hooks:
+	@echo "Enabling Git hooks..."
+	@git config core.hooksPath .githooks
+	@echo "Git hooks enabled successfully."
+
+disable-git-hooks:
+	@if [ "$$(git config --get core.hooksPath)" = ".githooks" ]; then \
+		echo "Disabling Git hooks..."; \
+		git config --unset core.hooksPath; \
+		echo "Git hooks disabled successfully."; \
+	else \
+		echo "Git hooks are not enabled for this repository."; \
+	fi
+
 # Build and upload
 build: check-venv
 	@echo "Starting build..."
