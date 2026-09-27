@@ -18,13 +18,13 @@ void test_light_state_default_to_json()
 void test_light_state_enabled_to_json()
 {
     JsonBuilder json;
-    LightState state = {
-        .enabled = true,
-        .color = {255, 128, 0},
-        .brightness = 128,
-        .animation = {
-            .type = AnimationType::None,
-            .parameters = {}}};
+
+    LightState state;
+    state.enabled = true;
+    state.color = {255, 128, 0};
+    state.brightness = 128;
+    state.animation.type = AnimationType::None;
+    state.animation.parameters = {};
 
     TEST_ASSERT_TRUE(json.beginObject());
     TEST_ASSERT_TRUE(state.toJson(json));
@@ -38,16 +38,14 @@ void test_light_state_enabled_to_json()
 void test_light_state_snake_animation_to_json()
 {
     JsonBuilder json;
-    LightState state = {
-        .enabled = true,
-        .color = {0, 255, 0},
-        .brightness = 200,
-        .animation = {
-            .type = AnimationType::Snake,
-            .parameters = {
-                .snake = {
-                    .speed = 50,
-                    .length = 10}}}};
+
+    LightState state;
+    state.enabled = true;
+    state.color = {0, 255, 0};
+    state.brightness = 200;
+    state.animation.type = AnimationType::Snake;
+    state.animation.parameters.snake.speed = 50;
+    state.animation.parameters.snake.length = 10;
 
     TEST_ASSERT_TRUE(json.beginObject());
     TEST_ASSERT_TRUE(state.toJson(json));
@@ -61,17 +59,15 @@ void test_light_state_snake_animation_to_json()
 void test_light_state_breathing_animation_to_json()
 {
     JsonBuilder json;
-    LightState state = {
-        .enabled = true,
-        .color = {0, 0, 255},
-        .brightness = 180,
-        .animation = {
-            .type = AnimationType::Breathing,
-            .parameters = {
-                .breathing = {
-                    .speed = 100,
-                    .minBrightness = 20,
-                    .maxBrightness = 200}}}};
+
+    LightState state;
+    state.enabled = true;
+    state.color = {0, 0, 255};
+    state.brightness = 180;
+    state.animation.type = AnimationType::Breathing;
+    state.animation.parameters.breathing.speed = 100;
+    state.animation.parameters.breathing.minBrightness = 20;
+    state.animation.parameters.breathing.maxBrightness = 200;
 
     TEST_ASSERT_TRUE(json.beginObject());
     TEST_ASSERT_TRUE(state.toJson(json));

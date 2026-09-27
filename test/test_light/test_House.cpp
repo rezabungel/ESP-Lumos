@@ -303,24 +303,20 @@ void test_house_to_json_with_static_and_animated_strips()
     Strip<46> strip1("strip1", "Strip 1", 10);
     Strip<48> strip2("strip2", "Strip 2", 20);
 
-    LightState state1 = {
-        .enabled = true,
-        .color = {255, 0, 0},
-        .brightness = 128,
-        .animation = {
-            .type = AnimationType::None,
-            .parameters = {}}};
+    LightState state1;
+    state1.enabled = true;
+    state1.color = {255, 0, 0};
+    state1.brightness = 128;
+    state1.animation.type = AnimationType::None;
+    state1.animation.parameters = {};
 
-    LightState state2 = {
-        .enabled = true,
-        .color = {0, 255, 0},
-        .brightness = 200,
-        .animation = {
-            .type = AnimationType::Snake,
-            .parameters = {
-                .snake = {
-                    .speed = 50,
-                    .length = 5}}}};
+    LightState state2;
+    state2.enabled = true;
+    state2.color = {0, 255, 0};
+    state2.brightness = 200;
+    state2.animation.type = AnimationType::Snake;
+    state2.animation.parameters.snake.speed = 50;
+    state2.animation.parameters.snake.length = 5;
 
     strip1.setLightState(state1);
     strip2.setLightState(state2);
