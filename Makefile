@@ -1,4 +1,4 @@
-# System Python (для создания venv)
+# System Python (for creating venv)
 python ?= python3.10
 # python / venv
 venv_dir = venv
@@ -88,6 +88,11 @@ monitor: check-venv
 	@echo "Monitor session ended."
 
 # Cleanup targets
+clean-build-artifacts:
+	@echo "Starting build artifacts cleanup..."
+	$(pio) run --target clean
+	@echo "Build artifacts cleanup completed successfully."
+
 clean-venv:
 	@echo "Starting virtual environment cleanup..."
 	rm -rf $(venv_dir)
@@ -103,5 +108,5 @@ clean-secrets:
 	rm -rf $(secrets_dir)
 	@echo "Secrets directory cleanup completed successfully."
 
-clean-all: clean-venv clean-wifi-secret clean-secrets
+clean-all: clean-build-artifacts clean-venv clean-wifi-secret clean-secrets
 	@echo "Full cleanup completed successfully."
