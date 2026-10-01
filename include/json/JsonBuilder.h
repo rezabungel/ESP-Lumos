@@ -22,11 +22,19 @@ public:
 
     bool endArray();
 
-    bool add(const char *name);
+    // Object property / Array string element
+    bool add(const char *valueOrName);
+
+    // Object properties
     bool add(const char *name, const char *value);
     bool add(const char *name, bool value);
     bool add(const char *name, uint8_t value);
     bool add(const char *name, uint16_t value);
+
+    // Array elements
+    bool add(bool value);
+    bool add(uint8_t value);
+    bool add(uint16_t value);
 
     const char *data() const;
     uint16_t size() const;
@@ -42,6 +50,7 @@ private:
 
         ContextType contextType;
         bool hasElements;
+        bool expectingValue;
     };
 
     char buffer[JSON_BUILDER_BUFFER_SIZE];

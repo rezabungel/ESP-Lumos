@@ -40,6 +40,43 @@ void test_object_fields()
         json.data());
 }
 
+void test_object_field_with_object_value()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginObject());
+
+    TEST_ASSERT_TRUE(json.add("children"));
+    TEST_ASSERT_TRUE(json.beginObject());
+    TEST_ASSERT_TRUE(json.add("id", "room1"));
+    TEST_ASSERT_TRUE(json.endObject());
+
+    TEST_ASSERT_TRUE(json.endObject());
+
+    TEST_ASSERT_EQUAL_STRING(
+        "{\"children\":{\"id\":\"room1\"}}",
+        json.data());
+}
+
+void test_object_field_with_array_value()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginObject());
+
+    TEST_ASSERT_TRUE(json.add("values"));
+    TEST_ASSERT_TRUE(json.beginArray());
+    TEST_ASSERT_TRUE(json.add(static_cast<uint8_t>(1)));
+    TEST_ASSERT_TRUE(json.add(static_cast<uint8_t>(2)));
+    TEST_ASSERT_TRUE(json.endArray());
+
+    TEST_ASSERT_TRUE(json.endObject());
+
+    TEST_ASSERT_EQUAL_STRING(
+        "{\"values\":[1,2]}",
+        json.data());
+}
+
 void test_object_bool_field()
 {
     JsonBuilder json;
@@ -122,6 +159,91 @@ void test_object_empty_string_value()
 
     TEST_ASSERT_EQUAL_STRING(
         "{\"name\":\"\"}",
+        json.data());
+}
+
+void test_array_string_elements()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginArray());
+
+    TEST_ASSERT_TRUE(json.add("red"));
+    TEST_ASSERT_TRUE(json.add("green"));
+    TEST_ASSERT_TRUE(json.add("blue"));
+
+    TEST_ASSERT_TRUE(json.endArray());
+
+    TEST_ASSERT_EQUAL_STRING(
+        "[\"red\",\"green\",\"blue\"]",
+        json.data());
+}
+
+void test_array_bool_elements()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginArray());
+
+    TEST_ASSERT_TRUE(json.add(true));
+    TEST_ASSERT_TRUE(json.add(false));
+
+    TEST_ASSERT_TRUE(json.endArray());
+
+    TEST_ASSERT_EQUAL_STRING(
+        "[true,false]",
+        json.data());
+}
+
+void test_array_uint8_elements()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginArray());
+
+    TEST_ASSERT_TRUE(json.add(static_cast<uint8_t>(0)));
+    TEST_ASSERT_TRUE(json.add(static_cast<uint8_t>(128)));
+    TEST_ASSERT_TRUE(json.add(static_cast<uint8_t>(255)));
+
+    TEST_ASSERT_TRUE(json.endArray());
+
+    TEST_ASSERT_EQUAL_STRING(
+        "[0,128,255]",
+        json.data());
+}
+
+void test_array_uint16_elements()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginArray());
+
+    TEST_ASSERT_TRUE(json.add(static_cast<uint16_t>(0)));
+    TEST_ASSERT_TRUE(json.add(static_cast<uint16_t>(12345)));
+    TEST_ASSERT_TRUE(json.add(static_cast<uint16_t>(65535)));
+
+    TEST_ASSERT_TRUE(json.endArray());
+
+    TEST_ASSERT_EQUAL_STRING(
+        "[0,12345,65535]",
+        json.data());
+}
+
+void test_array_mixed_elements()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginArray());
+
+    TEST_ASSERT_TRUE(json.add("red"));
+    TEST_ASSERT_TRUE(json.add(true));
+    TEST_ASSERT_TRUE(json.add(static_cast<uint8_t>(128)));
+    TEST_ASSERT_TRUE(json.add(static_cast<uint16_t>(500)));
+
+    TEST_ASSERT_TRUE(json.endArray());
+
+    TEST_ASSERT_EQUAL_STRING(
+        "[\"red\",true,128,500]",
         json.data());
 }
 
@@ -261,6 +383,62 @@ void test_cannot_begin_array_inside_object_without_name()
     TEST_ASSERT_EQUAL_STRING("{}", json.data());
 }
 
+void test_cannot_add_object_field_while_value_is_expected()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginObject());
+
+    TEST_ASSERT_TRUE(json.add("color"));
+
+    TEST_ASSERT_FALSE(json.add("brightness"));
+
+    TEST_ASSERT_TRUE(json.beginObject());
+    TEST_ASSERT_TRUE(json.endObject());
+
+    TEST_ASSERT_TRUE(json.endObject());
+
+    TEST_ASSERT_EQUAL_STRING(
+        "{\"color\":{}}",
+        json.data());
+}
+
+void test_cannot_close_object_while_value_is_expected()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginObject());
+    TEST_ASSERT_TRUE(json.add("color"));
+
+    TEST_ASSERT_FALSE(json.endObject());
+
+    TEST_ASSERT_TRUE(json.beginObject());
+    TEST_ASSERT_TRUE(json.endObject());
+
+    TEST_ASSERT_TRUE(json.endObject());
+
+    TEST_ASSERT_EQUAL_STRING(
+        "{\"color\":{}}",
+        json.data());
+}
+
+void test_cannot_add_scalar_element_to_object()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_TRUE(json.beginObject());
+
+    TEST_ASSERT_FALSE(json.add(true));
+    TEST_ASSERT_FALSE(json.add(static_cast<uint8_t>(1)));
+    TEST_ASSERT_FALSE(json.add(static_cast<uint16_t>(1)));
+
+    TEST_ASSERT_TRUE(json.endObject());
+
+    TEST_ASSERT_EQUAL_STRING(
+        "{}",
+        json.data());
+}
+
 void test_failed_begin_object_does_not_break_builder()
 {
     JsonBuilder json;
@@ -355,6 +533,26 @@ void test_can_begin_array_inside_array()
     TEST_ASSERT_EQUAL_STRING(
         "[[]]",
         json.data());
+}
+
+void test_cannot_begin_named_object_at_root()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_FALSE(json.beginObject("object"));
+
+    TEST_ASSERT_EQUAL_STRING("", json.data());
+    TEST_ASSERT_EQUAL_UINT16(0, json.size());
+}
+
+void test_cannot_begin_named_array_at_root()
+{
+    JsonBuilder json;
+
+    TEST_ASSERT_FALSE(json.beginArray("array"));
+
+    TEST_ASSERT_EQUAL_STRING("", json.data());
+    TEST_ASSERT_EQUAL_UINT16(0, json.size());
 }
 
 void test_cannot_close_empty_builder()
@@ -531,12 +729,20 @@ void run_json_builder_tests()
     RUN_TEST(test_empty_array);
 
     RUN_TEST(test_object_fields);
+    RUN_TEST(test_object_field_with_object_value);
+    RUN_TEST(test_object_field_with_array_value);
 
     RUN_TEST(test_object_bool_field);
     RUN_TEST(test_object_uint8_field);
     RUN_TEST(test_object_uint16_field);
     RUN_TEST(test_object_mixed_field_types);
     RUN_TEST(test_object_empty_string_value);
+
+    RUN_TEST(test_array_string_elements);
+    RUN_TEST(test_array_bool_elements);
+    RUN_TEST(test_array_uint8_elements);
+    RUN_TEST(test_array_uint16_elements);
+    RUN_TEST(test_array_mixed_elements);
 
     RUN_TEST(test_single_object_in_array);
     RUN_TEST(test_multiple_objects_in_array);
@@ -548,6 +754,10 @@ void run_json_builder_tests()
     RUN_TEST(test_cannot_begin_object_inside_object_without_name);
     RUN_TEST(test_cannot_begin_array_inside_object_without_name);
 
+    RUN_TEST(test_cannot_add_object_field_while_value_is_expected);
+    RUN_TEST(test_cannot_close_object_while_value_is_expected);
+    RUN_TEST(test_cannot_add_scalar_element_to_object);
+
     RUN_TEST(test_failed_begin_object_does_not_break_builder);
     RUN_TEST(test_failed_begin_array_does_not_break_builder);
 
@@ -555,6 +765,9 @@ void run_json_builder_tests()
     RUN_TEST(test_can_begin_array_inside_object_with_name);
     RUN_TEST(test_can_begin_object_inside_array);
     RUN_TEST(test_can_begin_array_inside_array);
+
+    RUN_TEST(test_cannot_begin_named_object_at_root);
+    RUN_TEST(test_cannot_begin_named_array_at_root);
 
     RUN_TEST(test_cannot_close_empty_builder);
     RUN_TEST(test_cannot_close_object_as_array);

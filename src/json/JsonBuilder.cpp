@@ -37,6 +37,11 @@ bool JsonBuilder::endObject()
         return false;
     }
 
+    if (contexts[level - 1].expectingValue)
+    {
+        return false;
+    }
+
     if (!append('}'))
     {
         return false;
@@ -89,7 +94,7 @@ bool JsonBuilder::endArray()
     return true;
 }
 
-bool JsonBuilder::add(const char *name)
+bool JsonBuilder::add(const char *valueOrName)
 {
     if (level == 0)
     {
@@ -98,31 +103,43 @@ bool JsonBuilder::add(const char *name)
 
     Context &context = contexts[level - 1];
 
-    if (context.contextType != Context::ContextType::Object)
+    if (context.contextType == Context::ContextType::Object)
     {
-        return false;
-    }
-
-    if (context.hasElements)
-    {
-        if (!append(','))
+        if (context.expectingValue)
         {
             return false;
         }
+
+        if (context.hasElements)
+        {
+            if (!append(','))
+            {
+                return false;
+            }
+        }
+
+        if (!append('"') || !append(valueOrName) || !append('"') || !append(':'))
+        {
+            return false;
+        }
+
+        context.hasElements = true;
+        context.expectingValue = true;
+
+        return true;
     }
 
-    if (!append('"') || !append(name) || !append('"') || !append(':'))
-    {
-        return false;
-    }
-
-    context.hasElements = true;
-
-    return true;
+    return prepareArrayElement() && append('"') && append(valueOrName) && append('"');
 }
 
 bool JsonBuilder::add(const char *name, const char *value)
 {
+    if (level == 0 ||
+        contexts[level - 1].contextType != Context::ContextType::Object)
+    {
+        return false;
+    }
+
     if (!add(name))
     {
         return false;
@@ -133,12 +150,95 @@ bool JsonBuilder::add(const char *name, const char *value)
         return false;
     }
 
+    contexts[level - 1].expectingValue = false;
+
     return true;
 }
 
 bool JsonBuilder::add(const char *name, bool value)
 {
+    if (level == 0 ||
+        contexts[level - 1].contextType != Context::ContextType::Object)
+    {
+        return false;
+    }
+
     if (!add(name))
+    {
+        return false;
+    }
+
+    if (!append(value ? "true" : "false"))
+    {
+        return false;
+    }
+
+    contexts[level - 1].expectingValue = false;
+
+    return true;
+}
+
+bool JsonBuilder::add(const char *name, uint8_t value)
+{
+    if (level == 0 ||
+        contexts[level - 1].contextType != Context::ContextType::Object)
+    {
+        return false;
+    }
+
+    if (!add(name))
+    {
+        return false;
+    }
+
+    char number[4];
+    snprintf(number, sizeof(number), "%u", value);
+
+    if (!append(number))
+    {
+        return false;
+    }
+
+    contexts[level - 1].expectingValue = false;
+
+    return true;
+}
+
+bool JsonBuilder::add(const char *name, uint16_t value)
+{
+    if (level == 0 ||
+        contexts[level - 1].contextType != Context::ContextType::Object)
+    {
+        return false;
+    }
+
+    if (!add(name))
+    {
+        return false;
+    }
+
+    char number[6];
+    snprintf(number, sizeof(number), "%u", value);
+
+    if (!append(number))
+    {
+        return false;
+    }
+
+    contexts[level - 1].expectingValue = false;
+
+    return true;
+}
+
+bool JsonBuilder::add(bool value)
+{
+    if (level == 0 ||
+        contexts[level - 1].contextType != Context::ContextType::Array)
+    {
+        return false;
+    }
+
+    if (!prepareArrayElement())
     {
         return false;
     }
@@ -146,9 +246,15 @@ bool JsonBuilder::add(const char *name, bool value)
     return append(value ? "true" : "false");
 }
 
-bool JsonBuilder::add(const char *name, uint8_t value)
+bool JsonBuilder::add(uint8_t value)
 {
-    if (!add(name))
+    if (level == 0 ||
+        contexts[level - 1].contextType != Context::ContextType::Array)
+    {
+        return false;
+    }
+
+    if (!prepareArrayElement())
     {
         return false;
     }
@@ -159,9 +265,15 @@ bool JsonBuilder::add(const char *name, uint8_t value)
     return append(number);
 }
 
-bool JsonBuilder::add(const char *name, uint16_t value)
+bool JsonBuilder::add(uint16_t value)
 {
-    if (!add(name))
+    if (level == 0 ||
+        contexts[level - 1].contextType != Context::ContextType::Array)
+    {
+        return false;
+    }
+
+    if (!prepareArrayElement())
     {
         return false;
     }
@@ -189,7 +301,14 @@ bool JsonBuilder::canOpenUnnamedContainer() const
         return true;
     }
 
-    return contexts[level - 1].contextType != Context::ContextType::Object;
+    const Context &context = contexts[level - 1];
+
+    if (context.contextType == Context::ContextType::Array)
+    {
+        return true;
+    }
+
+    return context.expectingValue;
 }
 
 bool JsonBuilder::openObject()
@@ -209,8 +328,16 @@ bool JsonBuilder::openObject()
         return false;
     }
 
+    if (level > 0 &&
+        contexts[level - 1].contextType == Context::ContextType::Object &&
+        contexts[level - 1].expectingValue)
+    {
+        contexts[level - 1].expectingValue = false;
+    }
+
     contexts[level].contextType = Context::ContextType::Object;
     contexts[level].hasElements = false;
+    contexts[level].expectingValue = false;
 
     ++level;
 
@@ -234,8 +361,16 @@ bool JsonBuilder::openArray()
         return false;
     }
 
+    if (level > 0 &&
+        contexts[level - 1].contextType == Context::ContextType::Object &&
+        contexts[level - 1].expectingValue)
+    {
+        contexts[level - 1].expectingValue = false;
+    }
+
     contexts[level].contextType = Context::ContextType::Array;
     contexts[level].hasElements = false;
+    contexts[level].expectingValue = false;
 
     ++level;
 
