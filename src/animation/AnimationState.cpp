@@ -2,7 +2,7 @@
 
 bool AnimationState::toJson(JsonBuilder &json) const
 {
-    if (!json.beginObject("animation"))
+    if (!json.beginObject())
     {
         return false;
     }

@@ -8,12 +8,10 @@ void test_animation_state_none_to_json()
         AnimationType::None,
         {}};
 
-    TEST_ASSERT_TRUE(json.beginObject());
     TEST_ASSERT_TRUE(state.toJson(json));
-    TEST_ASSERT_TRUE(json.endObject());
 
     TEST_ASSERT_EQUAL_STRING(
-        "{\"animation\":{\"type\":\"none\",\"parameters\":{}}}",
+        "{\"type\":\"none\",\"parameters\":{}}",
         json.data());
 }
 
@@ -26,12 +24,10 @@ void test_animation_state_snake_to_json()
              .speed = 50,
              .length = 10}}};
 
-    TEST_ASSERT_TRUE(json.beginObject());
     TEST_ASSERT_TRUE(state.toJson(json));
-    TEST_ASSERT_TRUE(json.endObject());
 
     TEST_ASSERT_EQUAL_STRING(
-        "{\"animation\":{\"type\":\"snake\",\"parameters\":{\"speed\":50,\"length\":10}}}",
+        "{\"type\":\"snake\",\"parameters\":{\"speed\":50,\"length\":10}}",
         json.data());
 }
 
@@ -45,12 +41,10 @@ void test_animation_state_breathing_to_json()
              .minBrightness = 20,
              .maxBrightness = 200}}};
 
-    TEST_ASSERT_TRUE(json.beginObject());
     TEST_ASSERT_TRUE(state.toJson(json));
-    TEST_ASSERT_TRUE(json.endObject());
 
     TEST_ASSERT_EQUAL_STRING(
-        "{\"animation\":{\"type\":\"breathing\",\"parameters\":{\"speed\":100,\"minBrightness\":20,\"maxBrightness\":200}}}",
+        "{\"type\":\"breathing\",\"parameters\":{\"speed\":100,\"minBrightness\":20,\"maxBrightness\":200}}",
         json.data());
 }
 

@@ -2,7 +2,7 @@
 
 bool Color::toJson(JsonBuilder &json) const
 {
-    if (!json.beginObject("color"))
+    if (!json.beginObject())
     {
         return false;
     }

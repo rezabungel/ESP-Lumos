@@ -2,7 +2,7 @@
 
 bool LightState::toJson(JsonBuilder &json) const
 {
-    if (!json.beginObject("state"))
+    if (!json.beginObject())
     {
         return false;
     }
@@ -12,7 +12,7 @@ bool LightState::toJson(JsonBuilder &json) const
         return false;
     }
 
-    if (!color.toJson(json))
+    if (!json.add("color") || !color.toJson(json))
     {
         return false;
     }
@@ -22,7 +22,7 @@ bool LightState::toJson(JsonBuilder &json) const
         return false;
     }
 
-    if (!animation.toJson(json))
+    if (!json.add("animation") || !animation.toJson(json))
     {
         return false;
     }

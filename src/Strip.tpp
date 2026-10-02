@@ -82,7 +82,7 @@ bool Strip<PIN>::toJson(JsonBuilder &json) const
         return false;
     }
 
-    if (!lightState.toJson(json))
+    if (!json.add("state") || !lightState.toJson(json))
     {
         return false;
     }
