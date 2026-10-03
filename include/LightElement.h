@@ -13,8 +13,8 @@ class LightElement
 public:
     virtual ~LightElement() = default;
 
-    virtual const char *getId() const = 0;
-    virtual const char *getName() const = 0;
+    const char *getId() const;
+    const char *getName() const;
     virtual LightElementType getType() const = 0;
 
     virtual bool toJson(JsonBuilder &json) const = 0;
@@ -27,6 +27,13 @@ public:
     virtual void setColor(const Color &color) = 0;
     virtual void setBrightness(uint8_t brightness) = 0;
     virtual void setAnimationState(const AnimationState &animationState) = 0;
+
+protected:
+    explicit LightElement(const char *id, const char *name);
+
+private:
+    const char *const id;
+    const char *const name;
 };
 
 #endif // _LIGHT_ELEMENT_H_

@@ -1,18 +1,6 @@
 template <uint8_t MAX_ELEMENTS>
-LightContainer<MAX_ELEMENTS>::LightContainer(const char *id, const char *name) : id(id), name(name), elementCount(0)
+LightContainer<MAX_ELEMENTS>::LightContainer(const char *id, const char *name) : LightElement(id, name), elementCount(0)
 {
-}
-
-template <uint8_t MAX_ELEMENTS>
-const char *LightContainer<MAX_ELEMENTS>::getId() const
-{
-    return id;
-}
-
-template <uint8_t MAX_ELEMENTS>
-const char *LightContainer<MAX_ELEMENTS>::getName() const
-{
-    return name;
 }
 
 template <uint8_t MAX_ELEMENTS>
@@ -23,12 +11,12 @@ bool LightContainer<MAX_ELEMENTS>::toJson(JsonBuilder &json) const
         return false;
     }
 
-    if (!json.add("id", id))
+    if (!json.add("id", getId()))
     {
         return false;
     }
 
-    if (!json.add("name", name))
+    if (!json.add("name", getName()))
     {
         return false;
     }

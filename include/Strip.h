@@ -24,8 +24,6 @@ public:
     CRGB *data();
     uint16_t size() const;
 
-    const char *getId() const override;
-    const char *getName() const override;
     LightElementType getType() const override;
 
     const LightState &getLightState() const;
@@ -43,8 +41,6 @@ public:
     bool render(uint32_t now) override;
 
 private:
-    const char *const id;
-    const char *const name;
     uint16_t length;
     CRGB *leds;
 

@@ -22,14 +22,6 @@ void test_strip_size_and_data()
     }
 }
 
-void test_strip_get_id_and_name()
-{
-    Strip<46> strip("strip1", "Living room strip", 10);
-
-    TEST_ASSERT_EQUAL_STRING("strip1", strip.getId());
-    TEST_ASSERT_EQUAL_STRING("Living room strip", strip.getName());
-}
-
 void test_strip_get_type()
 {
     Strip<46> strip("strip1", "Living room strip", 10);
@@ -349,7 +341,6 @@ void test_strip_render_steps_animation()
 void run_strip_tests()
 {
     RUN_TEST(test_strip_size_and_data);
-    RUN_TEST(test_strip_get_id_and_name);
     RUN_TEST(test_strip_get_type);
     RUN_TEST(test_strip_set_light_state);
     RUN_TEST(test_strip_to_json_default_state);

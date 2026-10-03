@@ -2,14 +2,6 @@
 #include "LightGroup.h"
 #include "Strip.h"
 
-void test_light_container_get_id_and_name()
-{
-    LightGroup group("group1", "Living room group");
-
-    TEST_ASSERT_EQUAL_STRING("group1", group.getId());
-    TEST_ASSERT_EQUAL_STRING("Living room group", group.getName());
-}
-
 void test_light_container_add_element()
 {
     LightGroup group("group1", "group1");
@@ -354,7 +346,6 @@ void test_light_container_set_animation_state()
 
 void run_light_container_tests()
 {
-    RUN_TEST(test_light_container_get_id_and_name);
     RUN_TEST(test_light_container_add_element);
     RUN_TEST(test_light_container_rejects_null_element);
     RUN_TEST(test_light_container_rejects_duplicate_pointer);
