@@ -21,8 +21,8 @@ public:
     void setBrightness(uint8_t brightness) override;
     void setAnimationState(const AnimationState &animationState) override;
 
-    LightElement *findElementByPointer(LightElement *searchEl) const;
-    LightElement *findElementByName(const char *searchName) const;
+    LightElement *findElementByPointer(const LightElement *searchEl) override;
+    LightElement *findElementById(const char *searchId) override;
 
     bool addElement(LightElement *el);
 

@@ -75,9 +75,42 @@ void test_light_element_get_id_and_name_for_const_element()
         element.getName());
 }
 
+void test_light_element_find_element_by_pointer()
+{
+    TestLightElement element("element1", "Element 1");
+    TestLightElement anotherElement("element2", "Element 2");
+
+    TEST_ASSERT_EQUAL_PTR(
+        static_cast<LightElement *>(&element),
+        element.findElementByPointer(&element));
+
+    TEST_ASSERT_NULL(
+        element.findElementByPointer(&anotherElement));
+
+    TEST_ASSERT_NULL(
+        element.findElementByPointer(nullptr));
+}
+
+void test_light_element_find_element_by_id()
+{
+    TestLightElement element("element1", "Element 1");
+
+    TEST_ASSERT_EQUAL_PTR(
+        static_cast<LightElement *>(&element),
+        element.findElementById("element1"));
+
+    TEST_ASSERT_NULL(
+        element.findElementById("unknown"));
+
+    TEST_ASSERT_NULL(
+        element.findElementById(nullptr));
+}
+
 void run_light_element_tests()
 {
     RUN_TEST(test_light_element_get_id);
     RUN_TEST(test_light_element_get_name);
     RUN_TEST(test_light_element_get_id_and_name_for_const_element);
+    RUN_TEST(test_light_element_find_element_by_pointer);
+    RUN_TEST(test_light_element_find_element_by_id);
 }

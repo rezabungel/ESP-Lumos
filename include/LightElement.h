@@ -28,6 +28,9 @@ public:
     virtual void setBrightness(uint8_t brightness) = 0;
     virtual void setAnimationState(const AnimationState &animationState) = 0;
 
+    virtual LightElement *findElementByPointer(const LightElement *searchEl);
+    virtual LightElement *findElementById(const char *searchId);
+
 protected:
     explicit LightElement(const char *id, const char *name);
 

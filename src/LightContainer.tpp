@@ -119,35 +119,61 @@ uint8_t LightContainer<MAX_ELEMENTS>::getElementCount() const
 }
 
 template <uint8_t MAX_ELEMENTS>
-LightElement *LightContainer<MAX_ELEMENTS>::findElementByPointer(LightElement *searchEl) const
+LightElement *LightContainer<MAX_ELEMENTS>::findElementByPointer(const LightElement *searchEl)
 {
+    if (searchEl == nullptr)
+    {
+        return nullptr;
+    }
+
+    if (this == searchEl)
+    {
+        return this;
+    }
+
     for (uint8_t i = 0; i < elementCount; ++i)
     {
-        if (elements[i] == searchEl)
+        LightElement *found = elements[i]->findElementByPointer(searchEl);
+
+        if (found != nullptr)
         {
-            return elements[i];
+            return found;
         }
     }
+
     return nullptr;
 }
 
 template <uint8_t MAX_ELEMENTS>
-LightElement *LightContainer<MAX_ELEMENTS>::findElementByName(const char *searchName) const
+LightElement *LightContainer<MAX_ELEMENTS>::findElementById(const char *searchId)
 {
+    if (searchId == nullptr)
+    {
+        return nullptr;
+    }
+
+    if (strcmp(getId(), searchId) == 0)
+    {
+        return this;
+    }
+
     for (uint8_t i = 0; i < elementCount; ++i)
     {
-        if (strcmp(elements[i]->getName(), searchName) == 0)
+        LightElement *found = elements[i]->findElementById(searchId);
+
+        if (found != nullptr)
         {
-            return elements[i];
+            return found;
         }
     }
+
     return nullptr;
 }
 
 template <uint8_t MAX_ELEMENTS>
 bool LightContainer<MAX_ELEMENTS>::addElement(LightElement *el)
 {
-    if (!el || findElementByPointer(el) || findElementByName(el->getName()) || elementCount >= MAX_ELEMENTS)
+    if (!el || findElementByPointer(el) || elementCount >= MAX_ELEMENTS)
     {
         return false;
     }
