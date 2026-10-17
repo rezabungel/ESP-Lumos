@@ -145,7 +145,7 @@ LightElement *LightContainer<MAX_ELEMENTS>::findElementByPointer(const LightElem
 }
 
 template <uint8_t MAX_ELEMENTS>
-LightElement *LightContainer<MAX_ELEMENTS>::findElementById(const char *searchId)
+const LightElement *LightContainer<MAX_ELEMENTS>::findElementById(const char *searchId) const
 {
     if (searchId == nullptr)
     {
@@ -159,7 +159,8 @@ LightElement *LightContainer<MAX_ELEMENTS>::findElementById(const char *searchId
 
     for (uint8_t i = 0; i < elementCount; ++i)
     {
-        LightElement *found = elements[i]->findElementById(searchId);
+        const LightElement *found =
+            static_cast<const LightElement *>(elements[i])->findElementById(searchId);
 
         if (found != nullptr)
         {
@@ -171,13 +172,56 @@ LightElement *LightContainer<MAX_ELEMENTS>::findElementById(const char *searchId
 }
 
 template <uint8_t MAX_ELEMENTS>
+LightElement *LightContainer<MAX_ELEMENTS>::findElementById(const char *searchId)
+{
+    return const_cast<LightElement *>(
+        static_cast<const LightContainer<MAX_ELEMENTS> *>(this)->findElementById(searchId));
+}
+
+template <uint8_t MAX_ELEMENTS>
 bool LightContainer<MAX_ELEMENTS>::addElement(LightElement *el)
 {
-    if (!el || findElementByPointer(el) || elementCount >= MAX_ELEMENTS)
+    if (!el || el->getParent() || el->getType() == LightElementType::House || elementCount >= MAX_ELEMENTS)
     {
         return false;
     }
 
+    const LightElement *root = getRoot();
+    if (!hasUniqueIds(root, el))
+    {
+        return false;
+    }
+
+    el->setParent(this);
     elements[elementCount++] = el;
+    return true;
+}
+
+template <uint8_t MAX_ELEMENTS>
+bool LightContainer<MAX_ELEMENTS>::hasUniqueIds(const LightElement *root, const LightElement *el) const
+{
+    if (!root || !el)
+    {
+        return false;
+    }
+
+    if (root->findElementById(el->getId()))
+    {
+        return false;
+    }
+
+    if (el->getType() != LightElementType::Strip)
+    {
+        for (uint8_t i = 0; i < el->getElementCount(); ++i)
+        {
+            bool uniqueId = hasUniqueIds(root, el->getElement(i));
+
+            if (!uniqueId)
+            {
+                return false;
+            }
+        }
+    }
+
     return true;
 }

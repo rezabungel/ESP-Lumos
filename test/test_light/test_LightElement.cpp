@@ -106,6 +106,48 @@ void test_light_element_find_element_by_id()
         element.findElementById(nullptr));
 }
 
+void test_light_element_find_element_by_id_for_const_element()
+{
+    const TestLightElement element("element1", "Element 1");
+
+    TEST_ASSERT_EQUAL_PTR(
+        static_cast<const LightElement *>(&element),
+        element.findElementById("element1"));
+
+    TEST_ASSERT_NULL(
+        element.findElementById("unknown"));
+
+    TEST_ASSERT_NULL(
+        element.findElementById(nullptr));
+}
+
+void test_light_element_get_parent_returns_null_for_detached_element()
+{
+    TestLightElement element("element1", "Element 1");
+
+    TEST_ASSERT_NULL(element.getParent());
+}
+
+void test_light_element_get_root_returns_self_for_detached_element()
+{
+    TestLightElement element("element1", "Element 1");
+
+    TEST_ASSERT_EQUAL_PTR(
+        static_cast<LightElement *>(&element),
+        element.getRoot());
+}
+
+void test_light_element_get_parent_and_root_for_const_element()
+{
+    const TestLightElement element("element1", "Element 1");
+
+    TEST_ASSERT_NULL(element.getParent());
+
+    TEST_ASSERT_EQUAL_PTR(
+        static_cast<const LightElement *>(&element),
+        element.getRoot());
+}
+
 void run_light_element_tests()
 {
     RUN_TEST(test_light_element_get_id);
@@ -113,4 +155,8 @@ void run_light_element_tests()
     RUN_TEST(test_light_element_get_id_and_name_for_const_element);
     RUN_TEST(test_light_element_find_element_by_pointer);
     RUN_TEST(test_light_element_find_element_by_id);
+    RUN_TEST(test_light_element_find_element_by_id_for_const_element);
+    RUN_TEST(test_light_element_get_parent_returns_null_for_detached_element);
+    RUN_TEST(test_light_element_get_root_returns_self_for_detached_element);
+    RUN_TEST(test_light_element_get_parent_and_root_for_const_element);
 }

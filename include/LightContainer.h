@@ -22,13 +22,16 @@ public:
     void setAnimationState(const AnimationState &animationState) override;
 
     LightElement *findElementByPointer(const LightElement *searchEl) override;
+    const LightElement *findElementById(const char *searchId) const override;
     LightElement *findElementById(const char *searchId) override;
 
     bool addElement(LightElement *el);
 
 protected:
-    LightElement *getElement(uint8_t index) const;
-    uint8_t getElementCount() const;
+    LightElement *getElement(uint8_t index) const override;
+    uint8_t getElementCount() const override;
+
+    bool hasUniqueIds(const LightElement *root, const LightElement *el) const;
 
 private:
     LightElement *elements[MAX_ELEMENTS];

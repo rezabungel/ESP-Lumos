@@ -29,11 +29,21 @@ void test_light_container_rejects_null_element()
 
 void test_light_container_rejects_duplicate_pointer()
 {
-    LightGroup group("group1", "group1");
-    Strip<46> strip("strip1", "strip1", 10);
+    LightGroup group1("group1", "Group 1");
+    LightGroup group2("group2", "Group 2");
 
-    TEST_ASSERT_TRUE(group.addElement(&strip));
-    TEST_ASSERT_FALSE(group.addElement(&strip));
+    Strip<46> strip("strip1", "Strip 1", 10);
+
+    TEST_ASSERT_TRUE(group1.addElement(&strip));
+
+    TEST_ASSERT_FALSE(group1.addElement(&strip));
+    TEST_ASSERT_FALSE(group2.addElement(&strip));
+
+    TEST_ASSERT_EQUAL_PTR(
+        static_cast<LightElement *>(&group1),
+        strip.getParent());
+
+    TEST_ASSERT_NULL(group2.findElementByPointer(&strip));
 }
 
 void test_light_container_allows_duplicate_names()
@@ -53,6 +63,152 @@ void test_light_container_allows_duplicate_names()
     TEST_ASSERT_EQUAL_PTR(
         static_cast<LightElement *>(&strip2),
         group.findElementById("strip2"));
+}
+
+void test_light_container_rejects_duplicate_ids()
+{
+    LightGroup group("group1", "Group 1");
+
+    Strip<46> strip1("strip1", "Strip 1", 10);
+    Strip<48> strip2("strip1", "Strip 2", 10);
+
+    TEST_ASSERT_TRUE(group.addElement(&strip1));
+    TEST_ASSERT_FALSE(group.addElement(&strip2));
+
+    TEST_ASSERT_NULL(strip2.getParent());
+
+    TEST_ASSERT_EQUAL_PTR(
+        static_cast<LightElement *>(&strip1),
+        group.findElementById("strip1"));
+}
+
+void test_light_container_rejects_id_matching_ancestor()
+{
+    House house("house", "House");
+    Room room("room1", "Room 1");
+    LightGroup group("group1", "Group 1");
+
+    Strip<46> strip("house", "Strip", 10);
+
+    TEST_ASSERT_TRUE(house.addElement(&room));
+    TEST_ASSERT_TRUE(room.addElement(&group));
+
+    TEST_ASSERT_FALSE(group.addElement(&strip));
+
+    TEST_ASSERT_NULL(strip.getParent());
+
+    TEST_ASSERT_EQUAL_PTR(
+        static_cast<LightElement *>(&house),
+        house.findElementById("house"));
+}
+
+void test_light_container_rejects_subtree_with_duplicate_id()
+{
+    House house("house", "House");
+
+    Room existingRoom("room1", "Room 1");
+    Strip<46> existingStrip("strip1", "Existing Strip", 10);
+
+    Room newRoom("room2", "Room 2");
+    Strip<48> newStrip("strip1", "New Strip", 10);
+
+    TEST_ASSERT_TRUE(existingRoom.addElement(&existingStrip));
+    TEST_ASSERT_TRUE(house.addElement(&existingRoom));
+
+    TEST_ASSERT_TRUE(newRoom.addElement(&newStrip));
+
+    TEST_ASSERT_FALSE(house.addElement(&newRoom));
+
+    TEST_ASSERT_NULL(newRoom.getParent());
+
+    TEST_ASSERT_EQUAL_PTR(
+        static_cast<LightElement *>(&newRoom),
+        newStrip.getParent());
+
+    TEST_ASSERT_NULL(house.findElementById("room2"));
+}
+
+void test_light_container_rejects_house_as_child()
+{
+    Room room("room1", "Room 1");
+    House house("house", "House");
+
+    TEST_ASSERT_FALSE(room.addElement(&house));
+
+    TEST_ASSERT_NULL(house.getParent());
+}
+
+// This test is tied to LIGHT_GROUP_MAX_STRIPS.
+// If the configured maximum changes, update the number of strips in this test.
+void test_light_container_rejects_element_when_full()
+{
+    LightGroup group("group1", "group1");
+
+    Strip<46> strip1("strip1", "strip1", 10);
+    Strip<48> strip2("strip2", "strip2", 10);
+    Strip<50> strip3("strip3", "strip3", 10);
+    Strip<52> strip4("strip4", "strip4", 10);
+
+    TEST_ASSERT_TRUE(group.addElement(&strip1));
+    TEST_ASSERT_TRUE(group.addElement(&strip2));
+    TEST_ASSERT_TRUE(group.addElement(&strip3));
+
+    TEST_ASSERT_FALSE(group.addElement(&strip4));
+    TEST_ASSERT_NULL(strip4.getParent());
+}
+
+void test_light_container_sets_parent_when_element_is_added()
+{
+    House house("house", "House");
+    Room room("room1", "Room 1");
+    LightGroup group("group1", "Group 1");
+    Strip<46> strip("strip1", "Strip 1", 10);
+
+    TEST_ASSERT_TRUE(group.addElement(&strip));
+    TEST_ASSERT_TRUE(room.addElement(&group));
+    TEST_ASSERT_TRUE(house.addElement(&room));
+
+    TEST_ASSERT_NULL(house.getParent());
+
+    TEST_ASSERT_EQUAL_PTR(
+        static_cast<LightElement *>(&house),
+        room.getParent());
+
+    TEST_ASSERT_EQUAL_PTR(
+        static_cast<LightElement *>(&room),
+        group.getParent());
+
+    TEST_ASSERT_EQUAL_PTR(
+        static_cast<LightElement *>(&group),
+        strip.getParent());
+}
+
+void test_light_container_get_root_returns_tree_root_for_nested_elements()
+{
+    House house("house", "House");
+    Room room("room1", "Room 1");
+    LightGroup group("group1", "Group 1");
+    Strip<46> strip("strip1", "Strip 1", 10);
+
+    TEST_ASSERT_TRUE(group.addElement(&strip));
+    TEST_ASSERT_TRUE(room.addElement(&group));
+    TEST_ASSERT_TRUE(house.addElement(&room));
+
+    TEST_ASSERT_EQUAL_PTR(
+        static_cast<LightElement *>(&house),
+        house.getRoot());
+
+    TEST_ASSERT_EQUAL_PTR(
+        static_cast<LightElement *>(&house),
+        room.getRoot());
+
+    TEST_ASSERT_EQUAL_PTR(
+        static_cast<LightElement *>(&house),
+        group.getRoot());
+
+    TEST_ASSERT_EQUAL_PTR(
+        static_cast<LightElement *>(&house),
+        strip.getRoot());
 }
 
 void test_light_container_find_element_by_pointer()
@@ -114,6 +270,26 @@ void test_light_container_find_element_by_id()
         group.findElementById(nullptr));
 }
 
+void test_light_container_find_element_by_id_for_const_element_reference()
+{
+    LightGroup group("group1", "Group 1");
+    Strip<46> strip("strip1", "Strip 1", 10);
+
+    TEST_ASSERT_TRUE(group.addElement(&strip));
+
+    const LightElement &element = group;
+
+    TEST_ASSERT_EQUAL_PTR(
+        static_cast<const LightElement *>(&strip),
+        element.findElementById("strip1"));
+
+    TEST_ASSERT_NULL(
+        element.findElementById("unknown"));
+
+    TEST_ASSERT_NULL(
+        element.findElementById(nullptr));
+}
+
 void test_light_container_finds_nested_elements()
 {
     House house("house", "House");
@@ -172,12 +348,16 @@ void test_light_container_searches_only_its_subtree()
 
 void test_light_container_find_methods_through_base_pointer()
 {
+    House house("house", "House");
+    Room room("room1", "Room 1");
     LightGroup group("group1", "Group 1");
     Strip<46> strip("strip1", "Strip 1", 10);
 
     TEST_ASSERT_TRUE(group.addElement(&strip));
+    TEST_ASSERT_TRUE(room.addElement(&group));
+    TEST_ASSERT_TRUE(house.addElement(&room));
 
-    LightElement *element = &group;
+    LightElement *element = &house;
 
     TEST_ASSERT_EQUAL_PTR(
         static_cast<LightElement *>(&strip),
@@ -186,6 +366,9 @@ void test_light_container_find_methods_through_base_pointer()
     TEST_ASSERT_EQUAL_PTR(
         static_cast<LightElement *>(&strip),
         element->findElementById("strip1"));
+
+    TEST_ASSERT_NULL(
+        element->findElementById("unknown"));
 }
 
 void test_light_container_does_not_find_unregistered_element()
@@ -202,24 +385,6 @@ void test_light_container_does_not_find_unregistered_element()
 
     TEST_ASSERT_NULL(
         group.findElementById("unregisteredStrip"));
-}
-
-// This test is tied to LIGHT_GROUP_MAX_STRIPS.
-// If the configured maximum changes, update the number of strips in this test.
-void test_light_container_rejects_element_when_full()
-{
-    LightGroup group("group1", "group1");
-
-    Strip<46> strip1("strip1", "strip1", 10);
-    Strip<48> strip2("strip2", "strip2", 10);
-    Strip<50> strip3("strip3", "strip3", 10);
-    Strip<52> strip4("strip4", "strip4", 10);
-
-    TEST_ASSERT_TRUE(group.addElement(&strip1));
-    TEST_ASSERT_TRUE(group.addElement(&strip2));
-    TEST_ASSERT_TRUE(group.addElement(&strip3));
-
-    TEST_ASSERT_FALSE(group.addElement(&strip4));
 }
 
 void test_light_container_set_light_state()
@@ -449,13 +614,24 @@ void run_light_container_tests()
     RUN_TEST(test_light_container_rejects_null_element);
     RUN_TEST(test_light_container_rejects_duplicate_pointer);
     RUN_TEST(test_light_container_allows_duplicate_names);
+
+    RUN_TEST(test_light_container_rejects_duplicate_ids);
+    RUN_TEST(test_light_container_rejects_id_matching_ancestor);
+    RUN_TEST(test_light_container_rejects_subtree_with_duplicate_id);
+    RUN_TEST(test_light_container_rejects_house_as_child);
+    RUN_TEST(test_light_container_rejects_element_when_full);
+
+    RUN_TEST(test_light_container_sets_parent_when_element_is_added);
+    RUN_TEST(test_light_container_get_root_returns_tree_root_for_nested_elements);
+
     RUN_TEST(test_light_container_find_element_by_pointer);
     RUN_TEST(test_light_container_find_element_by_id);
+    RUN_TEST(test_light_container_find_element_by_id_for_const_element_reference);
     RUN_TEST(test_light_container_finds_nested_elements);
     RUN_TEST(test_light_container_searches_only_its_subtree);
     RUN_TEST(test_light_container_find_methods_through_base_pointer);
     RUN_TEST(test_light_container_does_not_find_unregistered_element);
-    RUN_TEST(test_light_container_rejects_element_when_full);
+
     RUN_TEST(test_light_container_set_light_state);
     RUN_TEST(test_light_container_on);
     RUN_TEST(test_light_container_off);
