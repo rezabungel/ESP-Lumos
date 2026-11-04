@@ -5,15 +5,17 @@
 #include <ESPAsyncWebServer.h>
 #include <LittleFS.h>
 #include "config/WebServerConfig.h"
+#include "web/api/lights/LightsApi.h"
 
 class WebServerService
 {
 public:
-    WebServerService();
+    explicit WebServerService(LightsApi &lightsApi);
     void begin();
 
 private:
     AsyncWebServer server;
+    LightsApi &lightsApi;
 };
 
 #endif // _WEB_SERVER_SERVICE_H_

@@ -4,7 +4,7 @@
 #include "web/handlers/RootHandler.h"
 #include "web/handlers/PingHandler.h"
 
-WebServerService::WebServerService() : server(WEB_SERVER_PORT)
+WebServerService::WebServerService(LightsApi &lightsApi) : server(WEB_SERVER_PORT), lightsApi(lightsApi)
 {
 }
 
@@ -23,6 +23,9 @@ void WebServerService::begin()
     // API
     Serial.println("[WebServer] Registering API: /api/ping");
     server.on("/api/ping", HTTP_GET, handlePing);
+
+    Serial.println("[WebServer] Registering Lights API");
+    lightsApi.registerRoutes(server);
 
     // Start server
     server.begin();

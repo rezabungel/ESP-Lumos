@@ -3,20 +3,13 @@
 #include "WiFiService.h"
 #include "LittleFSService.h"
 #include "web/WebServerService.h"
+#include "web/api/lights/LightsApi.h"
 #include "LedManager.h"
 #include "House.h"
 #include "Room.h"
 #include "LightGroup.h"
 #include "Strip.h"
 #include "LightState.h"
-
-WebServerService webServer;
-
-// ============================================================
-//  LED MANAGER INITIALIZATION
-//  Create LED manager instance
-// ============================================================
-LedManager ledManager;
 
 // ============================================================
 //  OBJECTS INITIALIZATION
@@ -29,6 +22,22 @@ LightGroup lightGroup1("lightGroup1", "name-lightGroup1");
 LightGroup lightGroup2("lightGroup2", "name-lightGroup2");
 Strip<46> strip1("strip1", "name-strip1", 300);
 Strip<48> strip2("strip2", "name-strip2", 300);
+
+// ============================================================
+//  LIGHTS API INITIALIZATION
+// ============================================================
+LightsApi lightsApi(myHouse);
+
+// ============================================================
+//  WEB SERVER INITIALIZATION
+// ============================================================
+WebServerService webServer(lightsApi);
+
+// ============================================================
+//  LED MANAGER INITIALIZATION
+//  Create LED manager instance
+// ============================================================
+LedManager ledManager;
 
 // ============================================================
 // TEST STATE
@@ -106,11 +115,8 @@ void setup()
     esp_deep_sleep_start();
   }
 
-  // 3. Initialize and start HTTP web server
-  webServer.begin();
-
   // ========================================================
-  // HOUSE HIERARCHY BUILD
+  // 3. HOUSE HIERARCHY BUILD
   // Build hierarchy: House -> Room -> LightGroup -> Strip
   // House
   // ├── Room 1
@@ -129,11 +135,14 @@ void setup()
   lightGroup2.addElement(&strip2);
 
   // ========================================================
-  // LED MANAGER REGISTRATION
+  // 4. LED MANAGER REGISTRATION
   // Register all strips in LED manager
   // ========================================================
   ledManager.addStrip(&strip1);
   ledManager.addStrip(&strip2);
+
+  // 5. Initialize and start HTTP web server
+  webServer.begin();
 
   // ========================================================
   // INITIAL STATES
