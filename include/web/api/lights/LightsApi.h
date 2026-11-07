@@ -17,6 +17,9 @@ private:
 
     void handleGetLights(AsyncWebServerRequest *request);
     void handleGetLightById(AsyncWebServerRequest *request);
+
+    void handlePostLightOnById(AsyncWebServerRequest *request);
+    void handlePostLightOffById(AsyncWebServerRequest *request);
 };
 
 #endif // _LIGHTS_API_H_
