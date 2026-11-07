@@ -16,6 +16,7 @@ private:
     House &house;
 
     void handleGetLights(AsyncWebServerRequest *request);
+    void handleGetLightById(AsyncWebServerRequest *request);
 };
 
 #endif // _LIGHTS_API_H_
